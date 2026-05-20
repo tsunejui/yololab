@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>無人機影像辨識與計數系統開發流程</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="../index.html" class="back-link">← 返回系統總覽</a>
+
+    <header>
+      <h1>判別式 AI：無人機邊緣運算</h1>
+      <p>從影像採集、標註、模型訓練到邊緣端離線即時推論的一站式架構</p>
+    </header>
+
+    <section>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">
+        點擊下方任一階段，進入詳細介紹頁面
+      </p>
+
+      <div class="flowchart">
+        <a href="stage1.html" class="flow-node">
+          <div class="flow-node-number">STAGE 1</div>
+          <div class="flow-node-title">❶ 資料格式與標註</div>
+          <span class="flow-node-badge">CVAT / Roboflow</span>
+          <div class="flow-node-desc">
+            採集無人機俯視影像並轉為 YOLO 資料集格式，每張圖片配對一個 <code>.txt</code> 標籤檔。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage2.html" class="flow-node">
+          <div class="flow-node-number">STAGE 2</div>
+          <div class="flow-node-title">❷ AI 模型訓練</div>
+          <span class="flow-node-badge">Ultralytics YOLOv11</span>
+          <div class="flow-node-desc">
+            使用 YOLOv11 進行遷移學習，撰寫 <code>dataset.yaml</code> 並啟動 Python 訓練流程。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage3.html" class="flow-node">
+          <div class="flow-node-number">STAGE 3</div>
+          <div class="flow-node-title">❸ 計數與追蹤</div>
+          <span class="flow-node-badge">OpenCV + ByteTrack</span>
+          <div class="flow-node-desc">
+            掛載目標追蹤演算法，賦予每頭豬唯一 ID，避免畫面移動造成的重複計數。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage4.html" class="flow-node">
+          <div class="flow-node-number">STAGE 4</div>
+          <div class="flow-node-title">❹ 邊緣端硬體加速</div>
+          <span class="flow-node-badge">NVIDIA TensorRT</span>
+          <div class="flow-node-desc">
+            將 PyTorch 模型編譯為 TensorRT 引擎，於無人機微型電腦離線且流暢運算。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+      </div>
+
+      <figure class="flow-diagram">
+        <img src="../img/discriminative.png" alt="無人機 AI 豬隻辨識系統 — 系統示意圖">
+        <figcaption>系統運作示意圖</figcaption>
+      </figure>
+    </section>
+  </div>
+</body>
+
+</html>

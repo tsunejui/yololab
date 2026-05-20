@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 1：資料格式與標註 — 無人機 AI 豬隻辨識系統</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="discriminative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❶ 資料格式與標註
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：CVAT / Roboflow
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 1：資料標註相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段可選用的標註平台與工具。點擊「前往」可開啟官方網站。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">CVAT</td>
+                <td class="tool-desc">開源、可自架的影像標註平台，支援多人協作與審核流程，適合企業內部敏感資料。</td>
+                <td class="tool-link"><a href="https://www.cvat.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Roboflow</td>
+                <td class="tool-desc">SaaS 標註服務，提供資料增強、版本控制與 API，啟動門檻最低。</td>
+                <td class="tool-link"><a href="https://roboflow.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Label Studio</td>
+                <td class="tool-desc">開源、跨任務（影像、文字、音訊）的標註工具，靈活度高。</td>
+                <td class="tool-link"><a href="https://labelstud.io/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">LabelImg</td>
+                <td class="tool-desc">輕量級的桌面標註工具，原生支援 YOLO 格式，適合個人或小型專案。</td>
+                <td class="tool-link"><a href="https://github.com/HumanSignal/labelImg" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">YOLO Dataset Spec</td>
+                <td class="tool-desc">Ultralytics 官方資料格式規範，定義 train/val 結構與 dataset.yaml 寫法。</td>
+                <td class="tool-link"><a href="https://docs.ultralytics.com/datasets/detect/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+      <p>無人機採集完俯視影像後，必須將圖片轉為 YOLO 要求的資料集格式。每一張圖片都必須配對一個同名的 <code>.txt</code> 標籤檔案，內含邊界框的相對座標。點擊左側步驟可查看對應內容。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">無人機俯視拍攝</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">上傳至標註工具</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">人工繪製邊界框</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">匯出 YOLO 格式</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">分割 train / val</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">完成資料集</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">🚁 影像採集示意</div>
+            <div class="visual-block">
+              <div class="visual-icon">🚁</div>
+              <div class="visual-title">無人機定高俯視拍攝</div>
+              <div class="visual-sub">
+                以固定高度沿豬舍規劃航線飛行，攝影機保持 90° 垂直俯視，並設定影像重疊率以利後續拼接。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">高度 5~10m</span>
+                <span class="visual-chip">90° 俯視</span>
+                <span class="visual-chip">4K @ 30fps</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">📤 上傳至標註平台</div>
+            <div class="visual-block">
+              <div class="visual-icon">📤</div>
+              <div class="visual-title">CVAT / Roboflow</div>
+              <div class="visual-sub">
+                將從影片抽幀的靜態照片批次上傳至瀏覽器標註平台，建立專案並定義 <code>pig</code> 類別。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">CVAT</span>
+                <span class="visual-chip">Roboflow</span>
+                <span class="visual-chip">Label Studio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">✏️ 標註工具介面示意</div>
+            <div class="visual-block">
+              <div class="visual-icon">🟩</div>
+              <div class="visual-title">繪製 Bounding Box</div>
+              <div class="visual-sub">
+                為畫面中每一頭豬拖曳出矩形框，工具會自動計算中心點與寬高，並換算為相對座標。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">click + drag</span>
+                <span class="visual-chip">class = pig</span>
+                <span class="visual-chip">auto-normalize</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">📄 pic_001.txt（YOLO 標籤格式）</div>
+            <pre><code>0 0.512304 0.384211 0.124000 0.231000  <span class="comment"># 第 1 頭豬的方框</span>
+0 0.214500 0.658900 0.142000 0.198000  <span class="comment"># 第 2 頭豬的方框</span>
+0 0.789100 0.412200 0.115000 0.210000  <span class="comment"># 第 3 頭豬的方框</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">📂 資料夾階層結構</div>
+            <pre><code>pig_dataset/
+├── dataset.yaml        <span class="comment"># 專案配置文件</span>
+├── train/
+│   ├── images/         <span class="comment"># 訓練相片 (pic_001.jpg)</span>
+│   └── labels/         <span class="comment"># 訓練標籤 (pic_001.txt)</span>
+└── val/
+    ├── images/         <span class="comment"># 驗證相片</span>
+    └── labels/         <span class="comment"># 驗證標籤</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ 資料集就緒</div>
+            <div class="visual-block">
+              <div class="visual-icon">📦</div>
+              <div class="visual-title">符合 YOLO 規範的資料集</div>
+              <div class="visual-sub">
+                完成標註與切分後即可進入訓練流程，將整個 <code>pig_dataset/</code> 資料夾交給 YOLO 引擎。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">images ✓</span>
+                <span class="visual-chip">labels ✓</span>
+                <span class="visual-chip">dataset.yaml ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>無人機俯視拍攝</h4>
+          <p>使用具備 GPS 定位與高度鎖定功能的無人機，沿著預先規劃的航線完成豬舍空拍。為確保後續演算法效果，建議遵守下列原則：</p>
+          <ul>
+            <li><strong>飛行高度：</strong>5~10 公尺，視豬舍空間調整，避免擾動豬群但仍保留足夠解析度。</li>
+            <li><strong>拍攝角度：</strong>攝影機保持 90° 垂直向下，避免透視變形影響邊界框準確度。</li>
+            <li><strong>採樣率：</strong>4K 解析度搭配 30fps 錄影，事後抽幀作為訓練樣本。</li>
+            <li><strong>光照條件：</strong>避免正午過曝或陰影過深的時段，理想為晨間或多雲。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>上傳至標註平台</h4>
+          <p>常見的線上標註平台都支援 YOLO 格式匯出，可依團隊規模與預算選擇：</p>
+          <ul>
+            <li><strong>CVAT：</strong>開源、可自架，適合企業內部敏感資料，支援多人協作與審核流程。</li>
+            <li><strong>Roboflow：</strong>SaaS 服務，提供資料增強、版本控制與 API，啟動門檻最低。</li>
+            <li><strong>Label Studio：</strong>另一個開源選項，支援多種任務類型（不限影像）。</li>
+          </ul>
+          <p>上傳後建立專案，將類別命名為 <code>pig</code>（編號 0）。</p>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>人工繪製邊界框</h4>
+          <p>標註是整個 pipeline 中最費時但決定模型上限的步驟。建議：</p>
+          <ul>
+            <li><strong>框緊邊緣：</strong>盡量貼合豬隻輪廓，避免大量背景被納入框內。</li>
+            <li><strong>遮擋處理：</strong>對於只露出部分身體的豬，仍需標註可見區域；若小於 20% 可忽略。</li>
+            <li><strong>標註一致性：</strong>多人協作時建立共同準則（SOP），定期交叉檢視。</li>
+            <li><strong>樣本數量：</strong>單類別建議至少 1,500~3,000 框作為起跑線。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>匯出 YOLO 格式</h4>
+          <p>YOLO 標籤檔格式為：<code>[類別編號] [中心點X] [中心點Y] [寬度W] [高度H]</code>，所有座標皆<strong>歸一化至 0~1</strong>：</p>
+          <ul>
+            <li><strong>類別編號：</strong>整數，從 0 開始；本專案僅 <code>0 = pig</code>。</li>
+            <li><strong>歸一化座標：</strong>實際像素 ÷ 影像寬高，因此模型對解析度不敏感。</li>
+            <li><strong>檔案配對：</strong>每張 <code>pic_001.jpg</code> 必須有同名 <code>pic_001.txt</code>，缺檔將被忽略。</li>
+            <li><strong>空白標籤：</strong>若該張無目標物，仍可保留空 <code>.txt</code> 檔，YOLO 會視為「負樣本」用於降低誤判。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>分割 train / val</h4>
+          <p>將完成標註的影像依比例切分為訓練集與驗證集：</p>
+          <ul>
+            <li><strong>典型比例：</strong>train : val = 80 : 20，資料量大時可拉到 90 : 10。</li>
+            <li><strong>隨機切分：</strong>避免時間或場景集中於同一邊，可使用 <code>train_test_split</code> 或 Roboflow 自動切分。</li>
+            <li><strong>不可洩漏：</strong>同一支影片抽幀後，應將整支影片分到同一邊，避免訓練/驗證重疊造成過度樂觀的指標。</li>
+            <li><strong>資料夾結構：</strong>嚴格遵守 <code>train/images</code>、<code>train/labels</code>、<code>val/images</code>、<code>val/labels</code> 的四層結構。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>完成資料集</h4>
+          <p>檢查清單：</p>
+          <ul>
+            <li><strong>影像與標籤對齊：</strong>使用簡易腳本掃描每張圖片是否都有對應 <code>.txt</code>。</li>
+            <li><strong>視覺化抽查：</strong>隨機抽取 30~50 張將框畫回原圖，確認沒有座標錯位。</li>
+            <li><strong>類別分布：</strong>統計每張圖的目標數量分布，必要時補拍稀有場景。</li>
+            <li><strong>dataset.yaml：</strong>準備設定檔，指向 train/val 路徑與類別表，將在階段 2 使用。</li>
+          </ul>
+          <p>完成後，即可進入下一階段啟動模型訓練。</p>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="discriminative.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">返回流程圖</span>
+        </a>
+        <a href="stage2.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❷ AI 模型訓練</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    // Click backdrop to close dialog
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

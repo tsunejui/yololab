@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 1：結構化數據整合 — 生成式 AI 後端</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="generative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❶ 結構化數據整合（Data Extraction）
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：PostgreSQL / Supabase
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 1：結構化資料相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的關聯式資料庫、時序資料庫與 BaaS 平台。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">PostgreSQL</td>
+                <td class="tool-desc">業界主流的開源關聯式資料庫，支援 JSON、GIS 與向量擴充 (pgvector)。</td>
+                <td class="tool-link"><a href="https://www.postgresql.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">MySQL</td>
+                <td class="tool-desc">輕量普及的關聯式資料庫，部署簡單、生態系成熟。</td>
+                <td class="tool-link"><a href="https://www.mysql.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Supabase</td>
+                <td class="tool-desc">基於 PostgreSQL 的 BaaS 平台，內建 Auth、REST、Realtime、Storage 一站式。</td>
+                <td class="tool-link"><a href="https://supabase.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">TimescaleDB</td>
+                <td class="tool-desc">PostgreSQL 的時序資料擴充，適合儲存大量感測器歷史數據。</td>
+                <td class="tool-link"><a href="https://www.timescale.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">SQLAlchemy</td>
+                <td class="tool-desc">Python 的 ORM 與 SQL 工具包，方便 Agent 後端撰寫資料庫查詢。</td>
+                <td class="tool-link"><a href="https://www.sqlalchemy.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Apache Airflow</td>
+                <td class="tool-desc">資料管線排程工具，定時觸發 ETL 流程將原始資料整理成 JSON。</td>
+                <td class="tool-link"><a href="https://airflow.apache.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+
+      <p>邊緣端 YOLO 推論完成後，會將豬隻數量、環境感測器（溫度、濕度、氨氣）等讀數寫入後端關聯式資料庫。本階段負責<strong>定時</strong>把這些資料整理為乾淨的 JSON，作為下游 RAG 與 Agent 的「記憶基石」。點擊左側步驟可查看對應內容。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">邊緣端寫入資料庫</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">排程器定時觸發</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">SQL 撈取歷史數據</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">整理為 JSON 結構</span>
+          </button>
+          <button class="step-btn final" data-step="5">
+            <span class="step-num">✓</span><span class="step-text">結構化數據就緒</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">🚁 邊緣端資料上傳</div>
+            <div class="visual-block">
+              <div class="visual-icon">🚁</div>
+              <div class="visual-title">無人機 → 雲端資料庫</div>
+              <div class="visual-sub">
+                邊緣端每次推論完即透過 HTTPS / MQTT 將計數結果與感測器讀數寫入後端，建立持續累積的時序資料表。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">YOLO count</span>
+                <span class="visual-chip">temperature</span>
+                <span class="visual-chip">humidity</span>
+                <span class="visual-chip">NH₃</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">⏰ 排程觸發（每小時 / 每日）</div>
+            <pre><code><span class="keyword">from</span> apscheduler.schedulers.blocking <span class="keyword">import</span> BlockingScheduler
+
+scheduler = BlockingScheduler()
+
+<span class="comment"># 每日 18:00 撈取當天數據生成報告</span>
+<span class="keyword">@</span>scheduler.scheduled_job(<span class="string">'cron'</span>, hour=<span class="number">18</span>)
+<span class="keyword">def</span> daily_report():
+    data = fetch_farm_data(date=<span class="string">'today'</span>)
+    trigger_agent(data)
+
+scheduler.start()</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐘 SQL 查詢</div>
+            <pre><code><span class="keyword">SELECT</span>
+  zone_id,
+  TO_CHAR(ts, <span class="string">'HH24:MI'</span>) <span class="keyword">AS</span> time,
+  pig_count,
+  temperature,
+  humidity,
+  ammonia_ppm
+<span class="keyword">FROM</span> farm_readings
+<span class="keyword">WHERE</span> ts &gt;= NOW() - INTERVAL <span class="string">'24 hours'</span>
+  <span class="keyword">AND</span> farm_id = <span class="string">'TAICHUNG_PIG_03'</span>
+<span class="keyword">ORDER BY</span> ts <span class="keyword">ASC</span>;</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">📦 餵給 Agent 的 JSON</div>
+            <pre><code>{
+  <span class="string">"report_date"</span>: <span class="string">"2026-05-20"</span>,
+  <span class="string">"farm_id"</span>: <span class="string">"TAICHUNG_PIG_03"</span>,
+  <span class="string">"camera_analytics"</span>: {
+    <span class="string">"target_zone"</span>: <span class="string">"3號育成圈"</span>,
+    <span class="string">"yolo_pig_count_history"</span>: [
+      {<span class="string">"time"</span>: <span class="string">"08:00"</span>, <span class="string">"count"</span>: <span class="number">50</span>},
+      {<span class="string">"time"</span>: <span class="string">"12:00"</span>, <span class="string">"count"</span>: <span class="number">50</span>},
+      {<span class="string">"time"</span>: <span class="string">"16:00"</span>, <span class="string">"count"</span>: <span class="number">42</span>}
+    ],
+    <span class="string">"activity_level"</span>: <span class="string">"Low"</span>
+  },
+  <span class="string">"environmental_sensors"</span>: {
+    <span class="string">"avg_temperature"</span>: <span class="string">"29.5°C"</span>,
+    <span class="string">"humidity"</span>: <span class="string">"82%"</span>,
+    <span class="string">"ammonia_level"</span>: <span class="string">"25 ppm"</span>
+  }
+}</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">✅ 數據就緒</div>
+            <div class="visual-block">
+              <div class="visual-icon">💾</div>
+              <div class="visual-title">結構化數據 → 下游 Agent</div>
+              <div class="visual-sub">
+                已將原始時序資料整理為乾淨 JSON，可直接送入 RAG 檢索與 Agent 推理流程。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">JSON ready</span>
+                <span class="visual-chip">history 24h</span>
+                <span class="visual-chip">multi-sensor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>邊緣端寫入資料庫</h4>
+          <p>無人機 / Jetson 完成推論後，必須將結果送上後端持久化，常見模式：</p>
+          <ul>
+            <li><strong>HTTPS POST：</strong>每次計數完成呼叫後端 REST API，適合低頻寫入。</li>
+            <li><strong>MQTT：</strong>輕量級訊息協定，適合大量感測器同時上傳。</li>
+            <li><strong>批次上傳：</strong>無網路時暫存於本地 SQLite，連線恢復後一次同步。</li>
+            <li><strong>資料表設計：</strong>建議按時序欄位建立 index，並儲存原始照片連結而非 binary。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>排程器定時觸發</h4>
+          <p>後端不會每秒呼叫 LLM（成本太高），而是定期彙整數據：</p>
+          <ul>
+            <li><strong>APScheduler：</strong>Python 內嵌排程，適合小型專案。</li>
+            <li><strong>Cron：</strong>Linux 原生排程，搭配 Docker 部署最穩定。</li>
+            <li><strong>Apache Airflow：</strong>企業級資料管線，支援 DAG、重試、依賴管理。</li>
+            <li><strong>觸發時機：</strong>每小時短摘要、每日完整報告、異常即時觸發三層策略。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>SQL 撈取歷史數據</h4>
+          <p>查詢設計重點：</p>
+          <ul>
+            <li><strong>時間窗：</strong>依報告類型選擇（即時 1h、日報 24h、週報 7d）。</li>
+            <li><strong>多表 JOIN：</strong>影像分析表 + 感測器表 + 圈舍配置表組合成完整視角。</li>
+            <li><strong>聚合運算：</strong>使用 <code>AVG()</code>、<code>MAX()</code>、<code>PERCENTILE_CONT()</code> 計算統計指標。</li>
+            <li><strong>效能：</strong>對時序欄位 <code>ts</code> 建立 B-tree 或 BRIN index，避免全表掃描。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>整理為 JSON 結構</h4>
+          <p>為什麼要轉成 JSON？因為 LLM 對結構化文字理解能力最佳：</p>
+          <ul>
+            <li><strong>欄位語意化：</strong>用人類可讀的 key 名稱（如 <code>yolo_pig_count_history</code>），LLM 即可推論意圖。</li>
+            <li><strong>單位明示：</strong>溫度寫 <code>"29.5°C"</code> 而非裸數字，避免單位混淆。</li>
+            <li><strong>巢狀結構：</strong>將相關欄位群組（camera_analytics / environmental_sensors）幫助 LLM 分類。</li>
+            <li><strong>降噪：</strong>只放與報告相關的欄位，避免 prompt 過長浪費 token。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>結構化數據就緒</h4>
+          <p>本階段交付：</p>
+          <ul>
+            <li><strong>每次觸發產生一份 JSON：</strong>內容含時序歷史與多維感測器讀數。</li>
+            <li><strong>Token 友善：</strong>單次 JSON 通常 &lt; 2k tokens，留出空間給 RAG 與 LLM 回應。</li>
+            <li><strong>可重現：</strong>同一時間區段重跑會得到相同 JSON，便於除錯與測試。</li>
+            <li><strong>進入下一階段：</strong>Agent 將同時拿到此 JSON 與 RAG 知識庫，開始推理。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="generative.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">返回流程圖</span>
+        </a>
+        <a href="stage2.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❷ RAG 知識檢索</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

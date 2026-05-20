@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 4：邊緣端硬體加速 — 無人機 AI 豬隻辨識系統</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="discriminative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❹ 邊緣端硬體加速
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：NVIDIA TensorRT
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 4：邊緣加速與部署相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的模型編譯器、邊緣硬體平台與部署工具。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">NVIDIA TensorRT</td>
+                <td class="tool-desc">NVIDIA GPU 專屬的高效能推論編譯器，支援 FP16/INT8 量化與 layer fusion。</td>
+                <td class="tool-link"><a href="https://developer.nvidia.com/tensorrt" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">NVIDIA Jetson</td>
+                <td class="tool-desc">嵌入式 AI 運算平台 (Orin Nano / Xavier NX 等)，原生支援 CUDA + TensorRT。</td>
+                <td class="tool-link"><a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Ultralytics Export</td>
+                <td class="tool-desc">官方一行式匯出指令，支援 engine / onnx / coreml / tflite 等多種格式。</td>
+                <td class="tool-link"><a href="https://docs.ultralytics.com/modes/export/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">ONNX</td>
+                <td class="tool-desc">開放神經網路交換格式，跨框架部署的中間表示，可作為轉 TensorRT 前的中介。</td>
+                <td class="tool-link"><a href="https://onnx.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Intel OpenVINO</td>
+                <td class="tool-desc">若邊緣裝置採用 Intel CPU / iGPU / VPU，可改用 OpenVINO 進行硬體加速。</td>
+                <td class="tool-link"><a href="https://docs.openvino.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Google Coral / TFLite</td>
+                <td class="tool-desc">輕量級 TPU 加速器與 TensorFlow Lite，適合超低功耗邊緣場景。</td>
+                <td class="tool-link"><a href="https://coral.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">systemd</td>
+                <td class="tool-desc">Linux 系統服務管理員，用於設定推論程式於開機自啟動並持續執行。</td>
+                <td class="tool-link"><a href="https://systemd.io/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+      <p>無人機微型電腦算力有限。部署前必須將 PyTorch 模型編譯為硬體優化格式，以達成完全離線且即時的推論。點擊左側步驟查看對應內容。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">準備自訓練權重</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">CLI Export 編譯</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">FP16 半精度量化</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">產出 TensorRT 引擎</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">部署至邊緣裝置</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">完全離線即時推論</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">📂 階段 2 訓練輸出</div>
+            <pre><code>runs/detect/train/weights/
+└── best.pt          <span class="comment"># PyTorch 權重 (~5MB)</span>
+                     <span class="comment"># 桌機推論：~40ms / frame</span>
+                     <span class="comment"># 嵌入式推論：~150ms+ ❌</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">💻 終端機指令</div>
+            <pre><code style="color: #50fa7b;">yolo export \
+  model=best.pt \
+  format=engine \
+  device=0 \
+  imgsz=640 \
+  half=True</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">⚡ FP16 量化比較</div>
+            <div class="visual-block">
+              <div class="visual-icon">⚡</div>
+              <div class="visual-title">推論時間砍半，精度幾乎不變</div>
+              <div class="visual-sub">
+                FP32 (32-bit) 切換為 FP16 (16-bit) 後，運算量約減半，記憶體頻寬需求亦下降，且現代 GPU 對 FP16 有硬體加速。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">FP32: ~40ms</span>
+                <span class="visual-chip">FP16: ~20ms</span>
+                <span class="visual-chip">mAP −0.3% only</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">📂 編譯產出</div>
+            <pre><code>runs/detect/train/weights/
+├── best.pt          <span class="comment"># 原生 PyTorch 權重</span>
+│                    <span class="comment"># 桌機 ~40ms / frame</span>
+└── best.engine      <span class="comment"># TensorRT 引擎 ⭐</span>
+                     <span class="comment"># Jetson Nano ~8ms / frame</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">🚁 邊緣部署</div>
+            <div class="visual-block">
+              <div class="visual-icon">🛰️</div>
+              <div class="visual-title">複製 engine 至無人機晶片</div>
+              <div class="visual-sub">
+                透過 scp / U 盤將 <code>best.engine</code> 傳至 Jetson 等邊緣裝置，並設定 systemd 服務於開機自啟動。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">Jetson Orin Nano</span>
+                <span class="visual-chip">Raspberry Pi + Coral</span>
+                <span class="visual-chip">systemd auto-start</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ 上線運行</div>
+            <div class="visual-block">
+              <div class="visual-icon">🎯</div>
+              <div class="visual-title">完全離線即時推論</div>
+              <div class="visual-sub">
+                無須連網，可於現場直接完成豬隻偵測與計數，整體延遲 &lt; 30ms，足夠 30fps 流暢即時。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">~8ms / frame</span>
+                <span class="visual-chip">100% offline</span>
+                <span class="visual-chip">30+ FPS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>準備自訓練權重</h4>
+          <p>從階段 2 取得的 <code>best.pt</code> 在桌機可運作，但直接部署到邊緣裝置會遇到瓶頸：</p>
+          <ul>
+            <li><strong>PyTorch 動態圖：</strong>推論時仍會經過 Python 解譯與動態 graph 建構，開銷大。</li>
+            <li><strong>嵌入式 GPU 算力有限：</strong>Jetson Nano 僅 472 GFLOPS（FP16），與桌機 RTX 等級差距百倍。</li>
+            <li><strong>記憶體頻寬：</strong>邊緣裝置記憶體與 GPU 共用，搬運成本高。</li>
+            <li><strong>解決方案：</strong>編譯為硬體優化的 TensorRT 引擎，跳過 Python 開銷並使用低精度運算。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>CLI Export 編譯</h4>
+          <p>Ultralytics 提供一行式指令完成模型轉換，主要參數：</p>
+          <ul>
+            <li><strong>model：</strong>來源 PyTorch 權重，可為相對或絕對路徑。</li>
+            <li><strong>format=engine：</strong>輸出 TensorRT；其他選項：<code>onnx</code>、<code>openvino</code>、<code>coreml</code>、<code>tflite</code>。</li>
+            <li><strong>device=0：</strong>編譯時使用的 GPU，建議在<strong>目標部署裝置</strong>上執行 export，因 TensorRT engine 與 GPU 架構綁定。</li>
+            <li><strong>imgsz=640：</strong>輸入尺寸；engine 編譯後為固定尺寸，部署時須一致。</li>
+            <li><strong>half=True：</strong>啟用 FP16 量化（詳見步驟 3）。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>FP16 半精度量化</h4>
+          <p>降低數值精度以換取效能，是邊緣部署的核心技巧：</p>
+          <ul>
+            <li><strong>FP32 → FP16：</strong>每個浮點數從 32 bit 縮減為 16 bit，記憶體佔用直接減半。</li>
+            <li><strong>硬體加速：</strong>NVIDIA Tensor Cores 對 FP16 有專屬加速通道，吞吐量約 2x。</li>
+            <li><strong>精度損失極小：</strong>對於物件偵測這類任務，mAP 通常僅下降 0.1~0.5%，肉眼無感。</li>
+            <li><strong>進階：INT8 量化：</strong>可再壓榨至 8 bit，但需提供 calibration dataset，且精度損失較顯著（適合更嚴苛場景）。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>產出 TensorRT 引擎</h4>
+          <p><code>best.engine</code> 是針對特定 GPU 架構編譯的二進位檔：</p>
+          <ul>
+            <li><strong>kernel auto-tuning：</strong>編譯期間 TensorRT 會實際 benchmark 多種 kernel 實作，選最快版本。</li>
+            <li><strong>layer fusion：</strong>合併連續層（如 Conv + BN + ReLU）為單一運算，減少 memory round-trip。</li>
+            <li><strong>不可跨架構：</strong>在 Jetson Orin 編譯的 engine 無法直接在 Jetson Nano 跑，需在每個目標裝置重新 export。</li>
+            <li><strong>使用方式：</strong>仍透過 <code>YOLO('best.engine')</code> 載入，介面與 .pt 完全相同，無需修改推論程式碼。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>部署至邊緣裝置</h4>
+          <p>常見的邊緣硬體與部署方式：</p>
+          <ul>
+            <li><strong>NVIDIA Jetson 系列：</strong>Orin Nano / Xavier NX 是工業界主流，原生支援 TensorRT。</li>
+            <li><strong>檔案傳輸：</strong>使用 <code>scp best.engine drone@192.168.x.x:~/</code>，或燒錄到 U 盤手動複製。</li>
+            <li><strong>自動啟動：</strong>撰寫 systemd unit 將推論腳本註冊為服務，開機後自動啟動並監聽攝影機。</li>
+            <li><strong>監控與日誌：</strong>透過 <code>journalctl</code> 或本地檔案保留執行紀錄，協助現場除錯。</li>
+            <li><strong>韌體更新：</strong>建議建立 OTA 機制，便於日後推送新版 engine。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>完全離線即時推論</h4>
+          <p>整套系統上線後的特性與優勢：</p>
+          <ul>
+            <li><strong>零網路依賴：</strong>所有運算在無人機晶片完成，山區、地下、偏遠豬舍皆可運作。</li>
+            <li><strong>低延遲：</strong>單幀推論 ~8ms，加上影像 I/O 仍可維持 30fps 即時體驗。</li>
+            <li><strong>資料隱私：</strong>原始影像不離開裝置，符合農場資料保密需求。</li>
+            <li><strong>持續優化空間：</strong>蒐集現場誤判樣本回到 Stage 1 增量標註，形成資料閉環。</li>
+            <li><strong>專案完成 🎉：</strong>從採集到部署的完整 pipeline 至此交付，可開始實際營運。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage3.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❸ 計數與追蹤</span>
+        </a>
+        <a href="discriminative.html" class="next">
+          <span class="nav-label">完成 ✓</span>
+          <span class="nav-title">返回流程圖</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    // Click backdrop to close dialog
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

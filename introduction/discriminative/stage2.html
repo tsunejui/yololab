@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 2：AI 模型訓練 — 無人機 AI 豬隻辨識系統</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="discriminative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❷ AI 模型訓練
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：Ultralytics YOLOv11
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 2：模型訓練相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的訓練框架、底層工具與可選的實驗管理服務。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">Ultralytics YOLO</td>
+                <td class="tool-desc">YOLOv11 官方 Python 套件，提供訓練、驗證、推論、匯出一條龍 API。</td>
+                <td class="tool-link"><a href="https://docs.ultralytics.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">PyTorch</td>
+                <td class="tool-desc">YOLO 底層使用的深度學習框架，提供 GPU 加速張量運算與自動微分。</td>
+                <td class="tool-link"><a href="https://pytorch.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">NVIDIA CUDA</td>
+                <td class="tool-desc">GPU 平行運算工具包，PyTorch 透過它呼叫 NVIDIA 顯卡進行訓練加速。</td>
+                <td class="tool-link"><a href="https://developer.nvidia.com/cuda-toolkit" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">cuDNN</td>
+                <td class="tool-desc">NVIDIA 深度神經網路加速程式庫，是 CUDA 上實作卷積等運算的關鍵元件。</td>
+                <td class="tool-link"><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Weights &amp; Biases</td>
+                <td class="tool-desc">可選的雲端實驗管理服務，記錄訓練曲線、超參數與模型版本，方便團隊協作。</td>
+                <td class="tool-link"><a href="https://wandb.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">TensorBoard</td>
+                <td class="tool-desc">開源的訓練視覺化工具，可在本地檢視 loss、mAP 等指標曲線。</td>
+                <td class="tool-link"><a href="https://www.tensorflow.org/tensorboard" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+      <p>使用 YOLOv11 進行遷移學習。先撰寫 <code>dataset.yaml</code>，再透過 Python 啟動神經網路訓練。點擊左側步驟可查看對應內容。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">撰寫 dataset.yaml</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">載入預訓練模型</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">啟動遷移學習訓練</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">驗證集評估</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">輸出最佳權重</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">取得自訂模型</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">📄 dataset.yaml</div>
+            <pre><code>path: ./pig_dataset
+train: train/images
+val: val/images
+
+nc: 1
+names:
+  0: pig</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">🐍 載入預訓練權重</div>
+            <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+<span class="comment"># 載入官方 Nano 預訓練模型 (~5MB)</span>
+model = YOLO(<span class="string">'yolo11n.pt'</span>)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐍 train.py — 啟動訓練</div>
+            <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    model = YOLO(<span class="string">'yolo11n.pt'</span>)
+
+    model.train(
+        data=<span class="string">'dataset.yaml'</span>,
+        epochs=<span class="number">100</span>,
+        imgsz=<span class="number">640</span>,
+        device=<span class="number">0</span>  <span class="comment"># GPU index</span>
+    )</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">📊 驗證指標示意</div>
+            <div class="visual-block">
+              <div class="visual-icon">📈</div>
+              <div class="visual-title">每 epoch 自動評估</div>
+              <div class="visual-sub">
+                Ultralytics 會在每個 epoch 結束後對驗證集計算 mAP / Precision / Recall，並輸出 PR 曲線、混淆矩陣等圖表。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">mAP@0.5</span>
+                <span class="visual-chip">mAP@0.5:0.95</span>
+                <span class="visual-chip">Precision</span>
+                <span class="visual-chip">Recall</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">📂 訓練輸出資料夾</div>
+            <pre><code>runs/detect/train/
+├── weights/
+│   ├── best.pt        <span class="comment"># 驗證最佳權重 ⭐</span>
+│   └── last.pt        <span class="comment"># 最後一個 epoch 權重</span>
+├── results.csv        <span class="comment"># 每 epoch 指標</span>
+├── confusion_matrix.png
+├── PR_curve.png
+└── train_batch0.jpg   <span class="comment"># 訓練樣本可視化</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ 訓練完成</div>
+            <div class="visual-block">
+              <div class="visual-icon">🧠</div>
+              <div class="visual-title">自訂豬隻偵測模型就緒</div>
+              <div class="visual-sub">
+                取得 <code>best.pt</code> 即可進入下一階段：串接 OpenCV 與 ByteTrack 進行即時計數與追蹤。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">best.pt</span>
+                <span class="visual-chip">ready for inference</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>撰寫 dataset.yaml</h4>
+          <p>這是 YOLO 訓練過程的「地圖」，定義資料路徑與類別資訊：</p>
+          <ul>
+            <li><strong>path：</strong>資料集根目錄，可使用相對路徑或絕對路徑。</li>
+            <li><strong>train / val：</strong>影像所在資料夾，YOLO 會自動到對應的 <code>labels/</code> 找標籤檔。</li>
+            <li><strong>nc：</strong>類別數量 (number of classes)，本專案僅偵測豬，故為 1。</li>
+            <li><strong>names：</strong>類別編號與名稱的對應表，會在輸出視覺化時顯示。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>載入預訓練模型</h4>
+          <p>YOLOv11 共有 5 個尺寸可選，依算力與精度需求挑選：</p>
+          <ul>
+            <li><strong>yolo11n.pt (Nano)：</strong>~5MB，最快，適合無人機/邊緣裝置（本專案選用）。</li>
+            <li><strong>yolo11s.pt (Small)：</strong>平衡型，精度提升明顯。</li>
+            <li><strong>yolo11m.pt (Medium)：</strong>桌機級訓練的常見選擇。</li>
+            <li><strong>yolo11l.pt / yolo11x.pt：</strong>大型/最大型，研究或雲端推論使用。</li>
+          </ul>
+          <p>使用預訓練權重作為起點即為「遷移學習」，可大幅降低資料量需求與訓練時間。</p>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>啟動遷移學習訓練</h4>
+          <p>主要超參數說明：</p>
+          <ul>
+            <li><strong>epochs=100：</strong>訓練輪數。實務上會搭配 early stopping 自動收斂。</li>
+            <li><strong>imgsz=640：</strong>輸入解析度。提高可增加小物件偵測能力，但 VRAM 與時間倍增。</li>
+            <li><strong>device=0：</strong>指定 GPU 編號；多卡訓練可用 <code>device=[0,1]</code>。</li>
+            <li><strong>batch、lr、optimizer：</strong>Ultralytics 預設已調至合理值，初期不必動。</li>
+          </ul>
+          <p>訓練期間會自動套用 Mosaic、隨機翻轉等資料增強策略。</p>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>驗證集評估</h4>
+          <p>關鍵指標：</p>
+          <ul>
+            <li><strong>mAP@0.5：</strong>IoU 門檻 0.5 下的平均精度，最常引用的綜合指標。</li>
+            <li><strong>mAP@0.5:0.95：</strong>更嚴格的標準（COCO 指標），反映框準確度。</li>
+            <li><strong>Precision：</strong>預測為豬中真的是豬的比例（誤報率倒數）。</li>
+            <li><strong>Recall：</strong>實際是豬中被找到的比例（漏報率倒數）。</li>
+          </ul>
+          <p>觀察 <code>results.csv</code> 中曲線是否仍在下降；若 val loss 上升而 train loss 下降，則為過擬合徵兆。</p>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>輸出最佳權重</h4>
+          <p>訓練結束後檢視重點檔案：</p>
+          <ul>
+            <li><strong>best.pt：</strong>所有 epoch 中驗證 mAP 最高的版本，部署首選。</li>
+            <li><strong>last.pt：</strong>最後一個 epoch 的權重，可用於後續續訓 (<code>resume=True</code>)。</li>
+            <li><strong>results.csv / results.png：</strong>檢視訓練曲線、判斷收斂狀況。</li>
+            <li><strong>confusion_matrix.png：</strong>檢視類別誤判分布（單類別時較不重要）。</li>
+            <li><strong>val_batch*.jpg：</strong>視覺化驗證集預測，肉眼確認模型行為。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>取得自訂模型</h4>
+          <p>模型就緒後的建議：</p>
+          <ul>
+            <li><strong>離線驗證：</strong>在桌機端先用 <code>best.pt</code> 對未見過的測試影片做推論，確認效果。</li>
+            <li><strong>版本管理：</strong>將 <code>best.pt</code> 連同 <code>dataset.yaml</code>、<code>results.csv</code> 一併存檔，便於回溯。</li>
+            <li><strong>持續精進：</strong>蒐集模型表現不佳的樣本，加回訓練集進行第二輪 fine-tune。</li>
+            <li><strong>進入下一階段：</strong>準備好後即可進入 Stage 3，串接 OpenCV 與 ByteTrack。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage1.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❶ 資料格式與標註</span>
+        </a>
+        <a href="stage3.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❸ 計數與追蹤</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    // Click backdrop to close dialog
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

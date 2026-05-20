@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 豬隻辨識系統 — 系統總覽</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>AI 豬隻辨識系統</h1>
+      <p>由判別式 AI 與生成式 AI 雙引擎組成的智慧畜牧解決方案</p>
+    </header>
+
+    <section>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">
+        點擊下方任一區塊，進入詳細介紹
+      </p>
+
+      <div class="system-overview">
+        <a href="discriminative/discriminative.html" class="pillar-card left">
+          <div class="pillar-icon">🚁</div>
+          <div class="pillar-subtitle">前端 / 邊緣端</div>
+          <div class="pillar-title">無人機</div>
+          <div class="pillar-tag">代表 <strong>判別式 AI</strong></div>
+          <div class="pillar-desc">
+            在現場即時拍攝、偵測並計數豬隻，將辨識結果回傳給後端。
+          </div>
+          <div class="pillar-cta">查看開發流程 →</div>
+        </a>
+
+        <div class="system-flow-arrow">
+          <div class="arrow-line"></div>
+          <div class="arrow-label">資料傳輸</div>
+          <div class="arrow-head">▶</div>
+        </div>
+
+        <a href="generative/generative.html" class="pillar-card right">
+          <div class="pillar-icon">🖥️</div>
+          <div class="pillar-subtitle">雲端 / 後端</div>
+          <div class="pillar-title">後端伺服器</div>
+          <div class="pillar-tag">代表 <strong>生成式 AI</strong></div>
+          <div class="pillar-desc">
+            接收邊緣端資料，運用生成式 AI 進行分析、報告與決策建議。
+          </div>
+          <div class="pillar-cta">查看後端架構 →</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <h2 class="section-heading">🆚 判別式 AI vs 生成式 AI</h2>
+      <p class="section-heading-sub">兩種 AI 技術在本系統中的職能與特性對照</p>
+
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="col-label">比較項目</th>
+              <th class="col-left">🚁 判別式 AI</th>
+              <th class="col-right">🖥️ 生成式 AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-label">主要任務</td>
+              <td class="col-left">分類、偵測、計數</td>
+              <td class="col-right">文字生成、推理、決策建議</td>
+            </tr>
+            <tr>
+              <td class="col-label">代表模型</td>
+              <td class="col-left">YOLO、ResNet、ViT、SAM</td>
+              <td class="col-right">GPT-4o、Claude 3.5、Llama 3</td>
+            </tr>
+            <tr>
+              <td class="col-label">輸入資料</td>
+              <td class="col-left">影像、影片、感測器讀數</td>
+              <td class="col-right">結構化資料 + 知識庫 + Prompt</td>
+            </tr>
+            <tr>
+              <td class="col-label">輸出形式</td>
+              <td class="col-left">邊界框、類別、追蹤 ID、數量</td>
+              <td class="col-right">Markdown 報告、建議書、PDF</td>
+            </tr>
+            <tr>
+              <td class="col-label">部署位置</td>
+              <td class="col-left">邊緣端（無人機晶片 / Jetson）</td>
+              <td class="col-right">雲端 / 後端伺服器</td>
+            </tr>
+            <tr>
+              <td class="col-label">推論延遲</td>
+              <td class="col-left">~8 ms / frame（即時）</td>
+              <td class="col-right">數秒至數十秒</td>
+            </tr>
+            <tr>
+              <td class="col-label">算力需求</td>
+              <td class="col-left">中等，可邊緣化（TensorRT 加速）</td>
+              <td class="col-right">大型 GPU 集群或 LLM API</td>
+            </tr>
+            <tr>
+              <td class="col-label">學習方式</td>
+              <td class="col-left">標註資料 + 監督式學習</td>
+              <td class="col-right">大規模預訓練 + RAG + Prompt</td>
+            </tr>
+            <tr>
+              <td class="col-label">系統中角色</td>
+              <td class="col-left">即時感知與計數（眼睛）</td>
+              <td class="col-right">推理分析與報告生成（大腦）</td>
+            </tr>
+            <tr>
+              <td class="col-label">代表工具</td>
+              <td class="col-left">OpenCV、Ultralytics、TensorRT</td>
+              <td class="col-right">LangChain、CrewAI、ChromaDB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <h2 class="section-heading">👥 相關職缺與工作項目</h2>
+      <p class="section-heading-sub">建構這套系統所需的人才組合與職能分工</p>
+
+      <div class="jobs-group">
+        <h3 class="jobs-group-title">🚁 判別式 AI 團隊（前端 / 邊緣端）</h3>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-title">電腦視覺工程師 <span class="job-en">CV Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">YOLO</span>
+              <span class="job-skill">OpenCV</span>
+              <span class="job-skill">PyTorch</span>
+              <span class="job-skill">CUDA</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>YOLOv11 模型訓練、驗證與調校</li>
+                <li>資料增強策略設計與實驗</li>
+                <li>mAP / Precision / Recall 指標分析</li>
+                <li>追蹤演算法（ByteTrack）整合與調校</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">邊緣 AI 工程師 <span class="job-en">Edge AI Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">Jetson</span>
+              <span class="job-skill">TensorRT</span>
+              <span class="job-skill">C++</span>
+              <span class="job-skill">ONNX</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>模型量化（FP16 / INT8）與編譯</li>
+                <li>Jetson / 嵌入式平台部署</li>
+                <li>無人機影像串流整合</li>
+                <li>即時推論效能優化（延遲 / 功耗）</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">資料標註負責人 <span class="job-en">Data Annotation Lead</span></div>
+            <div class="job-skills">
+              <span class="job-skill">CVAT</span>
+              <span class="job-skill">Roboflow</span>
+              <span class="job-skill">QA</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>建立標註 SOP 與品質標準</li>
+                <li>標註團隊管理與訓練</li>
+                <li>資料分布分析與補拍策略</li>
+                <li>train / val 切分與資料治理</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jobs-group">
+        <h3 class="jobs-group-title">🖥️ 生成式 AI 團隊（雲端 / 後端）</h3>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-title">AI / LLM 工程師 <span class="job-en">LLM Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">LangChain</span>
+              <span class="job-skill">CrewAI</span>
+              <span class="job-skill">RAG</span>
+              <span class="job-skill">Prompt Eng.</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>多 Agent 工作流設計與實作</li>
+                <li>RAG 知識庫建構與優化</li>
+                <li>Prompt 工程與 LLM 模型選型</li>
+                <li>Agent 輸出品質評估與迭代</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">後端工程師 <span class="job-en">Backend Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">Python</span>
+              <span class="job-skill">FastAPI</span>
+              <span class="job-skill">PostgreSQL</span>
+              <span class="job-skill">Line Bot</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>REST API 與 Webhook 開發</li>
+                <li>資料庫 schema 設計與優化</li>
+                <li>排程任務與背景工作管理</li>
+                <li>Line / Email 通知整合</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">資料工程師 <span class="job-en">Data Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">ETL</span>
+              <span class="job-skill">Airflow</span>
+              <span class="job-skill">SQL</span>
+              <span class="job-skill">Vector DB</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>邊緣端資料攝入與 ETL pipeline</li>
+                <li>向量資料庫運維（pgvector / Chroma）</li>
+                <li>知識庫文件切割與索引維護</li>
+                <li>資料品質監控與告警</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jobs-group">
+        <h3 class="jobs-group-title">🛠️ 跨團隊支援角色</h3>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-title">MLOps 工程師 <span class="job-en">MLOps Engineer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">Docker</span>
+              <span class="job-skill">K8s</span>
+              <span class="job-skill">CI/CD</span>
+              <span class="job-skill">監控</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>模型部署管線（CI/CD）建置</li>
+                <li>容器化與多環境一致性</li>
+                <li>模型版本控管與 A/B 測試</li>
+                <li>告警、日誌與可觀測性系統</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">UI / UX 設計師 <span class="job-en">Product Designer</span></div>
+            <div class="job-skills">
+              <span class="job-skill">Figma</span>
+              <span class="job-skill">儀表板</span>
+              <span class="job-skill">資料視覺化</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>農場主儀表板設計</li>
+                <li>PDF 報告版面與資訊架構</li>
+                <li>Line Bot 互動流程設計</li>
+                <li>易用性測試與迭代</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">產品 / 專案經理 <span class="job-en">PM</span></div>
+            <div class="job-skills">
+              <span class="job-skill">Roadmap</span>
+              <span class="job-skill">需求分析</span>
+              <span class="job-skill">跨團隊協作</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>農場主訪談與需求轉譯</li>
+                <li>跨團隊（CV / LLM / Backend）協調</li>
+                <li>產品路線圖與優先級排序</li>
+                <li>上線後成效追蹤與回饋收集</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="job-card">
+            <div class="job-title">領域專家顧問 <span class="job-en">Domain Expert</span></div>
+            <div class="job-skills">
+              <span class="job-skill">獸醫</span>
+              <span class="job-skill">畜牧</span>
+              <span class="job-skill">SOP</span>
+            </div>
+            <div class="job-desc">
+              <ul>
+                <li>提供豬隻疾病與飼養專業知識</li>
+                <li>協助建立 RAG 知識庫內容</li>
+                <li>驗證 AI 報告的臨床合理性</li>
+                <li>定義異常事件嚴重度標準</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>

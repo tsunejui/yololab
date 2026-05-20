@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生成式 AI 後端：自動化巡檢與報告生成流程</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="../index.html" class="back-link">← 返回系統總覽</a>
+
+    <header>
+      <h1>生成式 AI：後端伺服器智慧分析</h1>
+      <p>從資料庫撈取邊緣端數據，透過 RAG 知識庫與 AI Agent 自動生成農場巡檢報告</p>
+    </header>
+
+    <section>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">
+        點擊下方任一階段，進入詳細介紹頁面
+      </p>
+
+      <div class="flowchart">
+        <a href="stage1.html" class="flow-node">
+          <div class="flow-node-number">STAGE 1</div>
+          <div class="flow-node-title">❶ 結構化數據整合</div>
+          <span class="flow-node-badge">PostgreSQL / Supabase</span>
+          <div class="flow-node-desc">
+            定時從資料庫撈取 YOLO 計算的豬隻數量、環境感測器歷史數據，整理為乾淨的 JSON。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage2.html" class="flow-node">
+          <div class="flow-node-number">STAGE 2</div>
+          <div class="flow-node-title">❷ RAG 知識檢索</div>
+          <span class="flow-node-badge">LangChain / ChromaDB</span>
+          <div class="flow-node-desc">
+            預先將養豬規範、疾病百科、SOP 切碎並建索引，讓 AI 隨時調閱「教科書」。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage3.html" class="flow-node">
+          <div class="flow-node-number">STAGE 3</div>
+          <div class="flow-node-title">❸ AI Agent 推理</div>
+          <span class="flow-node-badge">CrewAI / GPT-4o</span>
+          <div class="flow-node-desc">
+            設定 Agent 角色與任務流程，讓 AI 思考、拆解、反思，整合所有數據與知識生成決策。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+
+        <div class="flow-arrow">▶</div>
+
+        <a href="stage4.html" class="flow-node">
+          <div class="flow-node-number">STAGE 4</div>
+          <div class="flow-node-title">❹ 技能與輸出</div>
+          <span class="flow-node-badge">ReportLab / Line Bot</span>
+          <div class="flow-node-desc">
+            將 Agent 結論轉為精美 PDF 報告，並在偵測到嚴重異常時主動推送 Line 通知。
+          </div>
+          <div class="flow-node-cta">查看詳情 →</div>
+        </a>
+      </div>
+
+      <figure class="flow-diagram">
+        <img src="../img/generative.png" alt="生成式 AI 後端伺服器 — 系統示意圖">
+        <figcaption>系統運作示意圖</figcaption>
+      </figure>
+    </section>
+  </div>
+</body>
+
+</html>

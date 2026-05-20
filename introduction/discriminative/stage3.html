@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 3：計數與追蹤 — 無人機 AI 豬隻辨識系統</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="discriminative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❸ 核心演算法計數與追蹤
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：OpenCV + ByteTrack
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 3：計數與追蹤相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的影像處理函式庫、追蹤演算法與串流協定相關資源。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">OpenCV</td>
+                <td class="tool-desc">業界標準的開源電腦視覺函式庫，負責影像讀取、繪製、串流接入與後處理。</td>
+                <td class="tool-link"><a href="https://opencv.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">ByteTrack</td>
+                <td class="tool-desc">高效能多目標追蹤演算法，透過低信心框二次匹配抗遮擋，Ultralytics 已內建。</td>
+                <td class="tool-link"><a href="https://github.com/ifzhang/ByteTrack" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Ultralytics Track API</td>
+                <td class="tool-desc">Ultralytics 官方追蹤模式說明，<code>model.track()</code> 介面與設定檔範本。</td>
+                <td class="tool-link"><a href="https://docs.ultralytics.com/modes/track/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">BoT-SORT</td>
+                <td class="tool-desc">另一個強勢的多目標追蹤器，加入相機運動補償，Ultralytics 也支援切換使用。</td>
+                <td class="tool-link"><a href="https://github.com/NirAharon/BoT-SORT" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">DeepSORT</td>
+                <td class="tool-desc">經典的追蹤演算法，整合外觀特徵（ReID），可作為對照基準。</td>
+                <td class="tool-link"><a href="https://github.com/nwojke/deep_sort" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">FFmpeg</td>
+                <td class="tool-desc">處理 RTSP 串流、影片轉檔、抽幀等任務的萬用命令列工具。</td>
+                <td class="tool-link"><a href="https://ffmpeg.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+      <p>為防止對同一頭豬「重複計數」，推論時必須掛載目標追蹤演算法（Tracking），為每頭豬賦予唯一 ID。陣列內部含有多少個獨立 ID，即代表當前畫面有幾頭豬。點擊左側步驟查看對應實作。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">讀取影像來源</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">逐幀 YOLO 偵測</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">ByteTrack 跨幀關聯</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">取得唯一 ID 清單</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">計算豬隻數量</span>
+          </button>
+          <button class="step-btn" data-step="6">
+            <span class="step-num">6</span><span class="step-text">繪製結果疊圖</span>
+          </button>
+          <button class="step-btn final" data-step="7">
+            <span class="step-num">✓</span><span class="step-text">完成即時計數系統</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">🐍 開啟影像串流</div>
+            <pre><code><span class="keyword">import</span> cv2
+
+<span class="comment"># 本地影片或 RTSP 串流皆可</span>
+cap = cv2.VideoCapture(<span class="string">'drone_stream.mp4'</span>)
+<span class="comment"># cap = cv2.VideoCapture('rtsp://drone.local/live')</span>
+
+<span class="keyword">while</span> cap.isOpened():
+    success, frame = cap.read()
+    <span class="keyword">if</span> <span class="keyword">not</span> success: <span class="keyword">break</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">🐍 載入模型 + 推論</div>
+            <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'runs/detect/train/weights/best.pt'</span>)
+
+<span class="comment"># 對單一幀進行偵測</span>
+results = model(frame)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐍 啟用 ByteTrack</div>
+            <pre><code><span class="comment"># persist=True 讓 tracker 在連續幀間保留狀態</span>
+results = model.track(
+    frame,
+    persist=<span class="keyword">True</span>,
+    tracker=<span class="string">"bytetrack.yaml"</span>
+)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">🐍 取得追蹤 ID</div>
+            <pre><code><span class="keyword">if</span> results[<span class="number">0</span>].boxes.id <span class="keyword">is not None</span>:
+    track_ids = (
+        results[<span class="number">0</span>].boxes.id
+        .int().cpu().tolist()
+    )
+    <span class="comment"># [1, 2, 3, 4, 5, ...]</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">🐍 統計畫面豬隻數</div>
+            <pre><code>current_pig_count = len(track_ids)
+
+<span class="comment"># 唯一 ID 數 = 畫面中豬隻數</span>
+<span class="comment"># 即使豬隻短暫遮擋，ByteTrack 會重新關聯</span>
+print(f<span class="string">"目前畫面共 {current_pig_count} 頭"</span>)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">🐍 結果視覺化</div>
+            <pre><code><span class="comment"># 將數量寫到畫面左上角</span>
+cv2.putText(
+    frame,
+    f<span class="string">"Pigs inside: {current_pig_count}"</span>,
+    (<span class="number">30</span>, <span class="number">50</span>),
+    cv2.FONT_HERSHEY_SIMPLEX,
+    <span class="number">1</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>
+)
+
+<span class="comment"># YOLO 自動繪製 bbox + ID</span>
+annotated = results[<span class="number">0</span>].plot()
+cv2.imshow(<span class="string">"Drone Census"</span>, annotated)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="7">
+            <div class="preview-label">✅ 完整程式</div>
+            <pre><code><span class="keyword">import</span> cv2
+<span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+
+model = YOLO(<span class="string">'best.pt'</span>)
+cap = cv2.VideoCapture(<span class="string">'drone_stream.mp4'</span>)
+
+<span class="keyword">while</span> cap.isOpened():
+    success, frame = cap.read()
+    <span class="keyword">if</span> <span class="keyword">not</span> success: <span class="keyword">break</span>
+
+    results = model.track(frame, persist=<span class="keyword">True</span>,
+                          tracker=<span class="string">"bytetrack.yaml"</span>)
+
+    <span class="keyword">if</span> results[<span class="number">0</span>].boxes.id <span class="keyword">is not None</span>:
+        ids = results[<span class="number">0</span>].boxes.id.int().cpu().tolist()
+        cv2.putText(frame, f<span class="string">"Pigs: {len(ids)}"</span>,
+                    (<span class="number">30</span>, <span class="number">50</span>), cv2.FONT_HERSHEY_SIMPLEX,
+                    <span class="number">1</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)
+
+    cv2.imshow(<span class="string">"Census"</span>, results[<span class="number">0</span>].plot())
+    <span class="keyword">if</span> cv2.waitKey(<span class="number">1</span>) & <span class="keyword">0xFF</span> == ord(<span class="string">'q'</span>): <span class="keyword">break</span>
+
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>讀取影像來源</h4>
+          <p>OpenCV 的 <code>VideoCapture</code> 是統一接口，支援多種來源：</p>
+          <ul>
+            <li><strong>本地檔案：</strong>傳入 mp4 / mov 等路徑，方便離線測試演算法正確性。</li>
+            <li><strong>RTSP 串流：</strong>傳入 <code>rtsp://…</code> URL，可即時接收無人機 / IP cam 影像。</li>
+            <li><strong>USB Webcam：</strong>傳入整數 (0, 1, …) 代表本機攝影機編號。</li>
+            <li><strong>HTTP MJPEG：</strong>許多消費級無人機提供 <code>http://drone.ip/video</code> 介面。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>逐幀 YOLO 偵測</h4>
+          <p>呼叫 <code>model(frame)</code> 會回傳一個 <code>Results</code> 物件，重要屬性：</p>
+          <ul>
+            <li><strong>boxes.xyxy：</strong>所有 bbox 的 (x1, y1, x2, y2) 像素座標。</li>
+            <li><strong>boxes.conf：</strong>信心分數，可用 <code>conf=0.5</code> 過濾低信心目標。</li>
+            <li><strong>boxes.cls：</strong>類別索引（本專案皆為 0）。</li>
+            <li><strong>速度：</strong>桌機 RTX 3060 上 YOLOv11n @ 640px 約 5~8ms/frame。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>ByteTrack 跨幀關聯</h4>
+          <p>單純逐幀偵測會讓「同一頭豬」在每幀變成不同實例，導致重複計數。ByteTrack 透過動態關聯解決此問題：</p>
+          <ul>
+            <li><strong>運動預測：</strong>使用 Kalman Filter 預測下一幀位置。</li>
+            <li><strong>IoU 匹配：</strong>將預測位置與當前偵測框比對，相近者視為同一目標。</li>
+            <li><strong>低信心保留：</strong>不直接丟棄低信心框，給予二次匹配機會以對抗短暫遮擋。</li>
+            <li><strong>persist=True：</strong>關鍵參數，告訴 YOLO 在連續呼叫間保留 tracker 狀態。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>取得唯一 ID 清單</h4>
+          <p>每個被追蹤的目標都會獲得整數 ID，新進場的目標 ID 持續遞增：</p>
+          <ul>
+            <li><strong>boxes.id：</strong>形狀為 <code>(N,)</code> 的 tensor，可能為 None（無偵測時）。</li>
+            <li><strong>.int().cpu().tolist()：</strong>轉為 Python list 便於後續處理。</li>
+            <li><strong>典型輸出：</strong><code>[3, 7, 12, 15, 18]</code>，代表畫面有 5 頭豬，ID 不連續是因為其他豬已離開畫面。</li>
+            <li><strong>None 防呆：</strong>務必先檢查 <code>boxes.id is not None</code>，否則會 AttributeError。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>計算豬隻數量</h4>
+          <p>不同的「數量」定義對應不同實作：</p>
+          <ul>
+            <li><strong>當前畫面數：</strong><code>len(track_ids)</code>，最直觀。</li>
+            <li><strong>累計過去看過數：</strong>維護一個 <code>set()</code>，每幀 <code>set.update(ids)</code>，最後 <code>len(set)</code> 即為總數。</li>
+            <li><strong>跨越虛擬線數：</strong>適合「進/出計數」，需追蹤每個 ID 的中心點軌跡是否跨越預設邊界。</li>
+            <li><strong>實務挑戰：</strong>豬隻長時間遮擋可能讓 tracker 分配新 ID，導致重複計入；可調整 <code>track_buffer</code> 緩解。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>繪製結果疊圖</h4>
+          <p>常用 OpenCV API：</p>
+          <ul>
+            <li><strong>cv2.putText：</strong>寫入文字，最後參數是線條粗細。</li>
+            <li><strong>results[0].plot()：</strong>YOLO 內建一鍵繪製 bbox + ID + class + conf 的影像。</li>
+            <li><strong>cv2.imshow：</strong>桌面除錯用，部署到無人機時通常關閉以節省資源。</li>
+            <li><strong>cv2.VideoWriter：</strong>若需保存標註影片，可在每幀寫入輸出檔。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="7">
+          <h4>完成即時計數系統</h4>
+          <p>本階段交付：</p>
+          <ul>
+            <li><strong>predict_counter.py：</strong>可在桌機端執行的完整推論腳本。</li>
+            <li><strong>已驗證的演算法邏輯：</strong>確認 YOLO + ByteTrack 在實際拍攝環境下能穩定追蹤。</li>
+            <li><strong>調校過的超參數：</strong>tracker buffer、confidence threshold 等已根據實測微調。</li>
+            <li><strong>準備邊緣部署：</strong>接著進入 Stage 4，將 <code>best.pt</code> 編譯為 TensorRT engine 以在無人機晶片上達到即時。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage2.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❷ AI 模型訓練</span>
+        </a>
+        <a href="stage4.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❹ 邊緣端硬體加速</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    // Click backdrop to close dialog
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

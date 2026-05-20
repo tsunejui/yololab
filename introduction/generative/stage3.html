@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 3：AI Agent 推理 — 生成式 AI 後端</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="generative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❸ AI Agent 推理（Agent &amp; Reasoning）
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：CrewAI / GPT-4o
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 3：Agent 框架與 LLM 相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的 Agent 編排框架與大語言模型 API。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">CrewAI</td>
+                <td class="tool-desc">多 Agent 協作框架，以角色 + 任務的概念設計工作流，學習曲線最平緩。</td>
+                <td class="tool-link"><a href="https://www.crewai.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">LangGraph</td>
+                <td class="tool-desc">LangChain 出品的狀態機式 Agent 編排，支援迴圈與條件分支，控制力強。</td>
+                <td class="tool-link"><a href="https://www.langchain.com/langgraph" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">AutoGen</td>
+                <td class="tool-desc">微軟出品的多 Agent 框架，原生支援人在迴圈中 (human-in-the-loop)。</td>
+                <td class="tool-link"><a href="https://microsoft.github.io/autogen/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">OpenAI GPT-4o</td>
+                <td class="tool-desc">OpenAI 旗艦多模態模型，推理能力頂尖，適合複雜農業判讀任務。</td>
+                <td class="tool-link"><a href="https://platform.openai.com/docs/models" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Anthropic Claude 3.5</td>
+                <td class="tool-desc">長 context、強推理的 LLM，特別擅長結構化輸出與多步驟思考。</td>
+                <td class="tool-link"><a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Ollama</td>
+                <td class="tool-desc">在本地運行開源 LLM（Llama、Mistral 等），資料完全不外流。</td>
+                <td class="tool-link"><a href="https://ollama.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">LiteLLM</td>
+                <td class="tool-desc">統一介面呼叫 100+ 個 LLM 提供商，方便切換模型與比較。</td>
+                <td class="tool-link"><a href="https://www.litellm.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+
+      <p>設定 AI 的角色（如「資深畜牧專家」），讓它能<strong>思考、拆解任務、跨 Agent 協作、自我反思</strong>。本階段是整套系統的決策大腦，整合前兩階段的數據與知識，產出結構化的分析結論。點擊左側步驟查看 CrewAI 實作。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">設定 LLM 大腦</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">定義 Agent 角色</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">設計 Task 任務</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">組裝 Crew 工作流</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">啟動推理與反思</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">產出結構化結論</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">🐍 載入 LLM</div>
+            <pre><code><span class="keyword">import</span> os
+<span class="keyword">from</span> crewai <span class="keyword">import</span> Agent, Task, Crew, Process
+<span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI
+
+<span class="comment"># 設定大語言模型大腦</span>
+os.environ[<span class="string">"OPENAI_API_KEY"</span>] = <span class="string">"your_api_key_here"</span>
+
+llm = ChatOpenAI(
+    model=<span class="string">"gpt-4o"</span>,
+    temperature=<span class="number">0.2</span>  <span class="comment"># 低溫確保推理穩定</span>
+)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">🐍 兩位 AI Agent</div>
+            <pre><code>data_analyst = Agent(
+    role=<span class="string">'數據分析特工'</span>,
+    goal=<span class="string">'分析豬圈歷史數量與環境感測器數據，找出異常趨勢'</span>,
+    backstory=<span class="string">'你是一位精通統計學的 AI，'</span>
+              <span class="string">'專門從冰冷數據中抓出不尋常的警訊。'</span>,
+    verbose=<span class="keyword">True</span>,
+    llm=llm
+)
+
+livestock_expert = Agent(
+    role=<span class="string">'資深畜牧專家顧問'</span>,
+    goal=<span class="string">'根據分析結果，提供畜牧建議與疾病預防方案'</span>,
+    backstory=<span class="string">'你擁有 30 年的養豬與獸醫經驗，'</span>
+              <span class="string">'深知環境氨氣、溫度與豬隻行為的因果關係。'</span>,
+    verbose=<span class="keyword">True</span>,
+    llm=llm
+)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐍 任務鏈設計</div>
+            <pre><code>task1 = Task(
+    description=f<span class="string">'分析以下農場數據：{farm_data_json}。'</span>
+                <span class="string">'特別注意 16:00 數量從 50 隻降到 42 隻，'</span>
+                <span class="string">'以及氨氣濃度偏高的現象。'</span>,
+    expected_output=<span class="string">'一份條列式的異常與趨勢分析報告。'</span>,
+    agent=data_analyst
+)
+
+task2 = Task(
+    description=<span class="string">'根據數據分析師的報告，'</span>
+                <span class="string">'撰寫專業營運建議書，包含：'</span>
+                <span class="string">'1. 數量突降的潛在原因分析；'</span>
+                <span class="string">'2. 環境改善指引。'</span>,
+    expected_output=<span class="string">'結構完整的 Markdown 農場日報。'</span>,
+    agent=livestock_expert,
+    output_file=<span class="string">'pig_farm_daily_report.md'</span>
+)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">🐍 組裝 Crew</div>
+            <pre><code>pig_farm_crew = Crew(
+    agents=[data_analyst, livestock_expert],
+    tasks=[task1, task2],
+    process=Process.sequential
+    <span class="comment"># 循序：分析師完成後交棒給專家</span>
+)
+
+result = pig_farm_crew.kickoff()
+print(<span class="string">"## 報告生成完畢！"</span>)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">🤔 Agent 內部推理迴圈</div>
+            <div class="visual-block">
+              <div class="visual-icon">🤔</div>
+              <div class="visual-title">Reasoning → Critic → Refine</div>
+              <div class="visual-sub">
+                LLM 透過 ReAct / Chain-of-Thought 拆解問題，產生答案後再自我檢查邏輯漏洞，必要時重新嘗試。CrewAI 在背後自動處理這個迴圈。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">Thought</span>
+                <span class="visual-chip">Action</span>
+                <span class="visual-chip">Observation</span>
+                <span class="visual-chip">Critic</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ Agent 產出</div>
+            <pre><code><span class="comment"># 數據分析師輸出（task1.output）</span>
+<span class="string">"""
+- 16:00 豬隻數量驟降 16%（50 → 42）
+- 氨氣 25 ppm，超過國家標準 20 ppm
+- 溫度 29.5°C，搭配氨氣易引發遮擋行為
+"""</span>
+
+<span class="comment"># 畜牧專家輸出（task2.output，即最終報告）</span>
+<span class="string">"""
+# 智農生技：無人機巡檢與環境日報
+... (完整 Markdown 報告，見 Stage 4)
+"""</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>設定 LLM 大腦</h4>
+          <p>大模型選型影響成本與品質：</p>
+          <ul>
+            <li><strong>GPT-4o：</strong>推理頂尖、多模態能力強，適合主要決策節點。</li>
+            <li><strong>Claude 3.5 Sonnet：</strong>長 context、結構化輸出穩定，適合冗長分析。</li>
+            <li><strong>GPT-4o-mini / Haiku：</strong>簡單任務用便宜小模型，可大幅降低成本。</li>
+            <li><strong>temperature：</strong>分析類任務設 0.1~0.3，避免創意發散；創意寫作可拉到 0.7+。</li>
+            <li><strong>本地 LLM：</strong>資料敏感時改用 Ollama + Llama 3 系列，完全離線。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>定義 Agent 角色</h4>
+          <p>好的角色設計是 Agent 表現的關鍵：</p>
+          <ul>
+            <li><strong>role：</strong>一句話標籤，例如「資深畜牧顧問」。</li>
+            <li><strong>goal：</strong>明確的單一目標，避免模糊。</li>
+            <li><strong>backstory：</strong>背景故事，影響語氣與專業視角。</li>
+            <li><strong>分工原則：</strong>讓每個 Agent 專精一件事（分析、撰寫、審核），互相補位。</li>
+            <li><strong>tools：</strong>可指派外部工具（如 SQL 查詢、Web 搜尋）讓 Agent 自主呼叫。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>設計 Task 任務</h4>
+          <p>Task 是 Agent 的具體工作單元：</p>
+          <ul>
+            <li><strong>description：</strong>清楚描述輸入、目的與重點關注的指標。</li>
+            <li><strong>expected_output：</strong>明示期望格式（條列、表格、Markdown），降低 LLM 隨意發揮。</li>
+            <li><strong>output_file：</strong>自動將最終結果存檔，方便下游讀取。</li>
+            <li><strong>context：</strong>可傳入前一個 Task 的輸出作為輸入，建構任務鏈。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>組裝 Crew 工作流</h4>
+          <p>Crew 串起多個 Agent 與 Task：</p>
+          <ul>
+            <li><strong>Process.sequential：</strong>循序執行，前者輸出自動接到後者輸入。</li>
+            <li><strong>Process.hierarchical：</strong>有 manager Agent 動態分派任務，更複雜也更靈活。</li>
+            <li><strong>memory=True：</strong>啟用記憶讓 Agent 在多輪互動間保留 context。</li>
+            <li><strong>verbose：</strong>開發階段必開，可看到完整推理過程便於除錯。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>啟動推理與反思</h4>
+          <p>Agent 在 <code>kickoff()</code> 後內部執行多輪 ReAct 迴圈：</p>
+          <ul>
+            <li><strong>Thought：</strong>「需要先分析數量變化幅度」</li>
+            <li><strong>Action：</strong>呼叫工具（如查 RAG 知識庫）</li>
+            <li><strong>Observation：</strong>檢視工具回應內容</li>
+            <li><strong>Critic / Reflexion：</strong>自我審查答案是否合理，發現問題再迭代</li>
+            <li><strong>監控成本：</strong>每輪都會呼叫 LLM，建議設定 <code>max_iter</code> 上限。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>產出結構化結論</h4>
+          <p>本階段交付：</p>
+          <ul>
+            <li><strong>分析報告：</strong>由分析師 Agent 產出的異常摘要。</li>
+            <li><strong>建議報告：</strong>由專家 Agent 整合知識與分析後撰寫的決策建議。</li>
+            <li><strong>可追溯：</strong>verbose log 中保留完整推理鏈，可審核 AI 判斷邏輯。</li>
+            <li><strong>進入下一階段：</strong>把 Markdown 報告交給 Skills 模組轉成 PDF 並推播。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage2.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❷ RAG 知識檢索</span>
+        </a>
+        <a href="stage4.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❹ 技能與輸出</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

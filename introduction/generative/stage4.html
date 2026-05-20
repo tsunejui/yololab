@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 4：技能與輸出 — 生成式 AI 後端</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="generative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❹ 技能與輸出（Tools &amp; Skills）
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：ReportLab / Line Bot
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 4：輸出與通知相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的報告產生器、Web 框架與訊息推送服務。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">ReportLab</td>
+                <td class="tool-desc">Python 老牌 PDF 生成函式庫，可精細控制版面、字型與圖表。</td>
+                <td class="tool-link"><a href="https://www.reportlab.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">WeasyPrint</td>
+                <td class="tool-desc">將 HTML + CSS 渲染為高品質 PDF，適合套用樣板的場景。</td>
+                <td class="tool-link"><a href="https://weasyprint.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">FastAPI</td>
+                <td class="tool-desc">高效能 Python Web 框架，用來架設報告 API 與 webhook 入口。</td>
+                <td class="tool-link"><a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Line Messaging API</td>
+                <td class="tool-desc">官方 Line Bot SDK，可推播文字、貼圖、Flex Message 給農場主人。</td>
+                <td class="tool-link"><a href="https://developers.line.biz/en/services/messaging-api/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">SendGrid</td>
+                <td class="tool-desc">郵件推送服務，可將 PDF 報告作為附件寄出。</td>
+                <td class="tool-link"><a href="https://sendgrid.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Twilio</td>
+                <td class="tool-desc">SMS / WhatsApp / 電話通知服務，緊急事件可用語音直接告警。</td>
+                <td class="tool-link"><a href="https://www.twilio.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Markdown-it / Pandoc</td>
+                <td class="tool-desc">Markdown 解析與格式轉換工具，可將 Agent 產出轉為 HTML / DOCX。</td>
+                <td class="tool-link"><a href="https://pandoc.org/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+
+      <p>Agent 完成思考後，本階段是「<strong>系統的手腳</strong>」：把 Markdown 排版成精美 PDF、判斷異常嚴重度、主動推送 Line 通知。讓農場主人不必盯著儀表板，重要事件自動找上門。點擊左側步驟查看實作。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">取得 Agent 結論</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">產生 Markdown 報告</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">轉換為 PDF</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">異常嚴重度判斷</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">推送 Line 通知</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">報告送達農場主人</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">🐍 接收 Crew 結果</div>
+            <pre><code>result = pig_farm_crew.kickoff()
+
+<span class="comment"># Agent 輸出的 Markdown 內容</span>
+markdown_report = result.raw
+
+<span class="comment"># 結構化資訊（用於異常判斷）</span>
+alerts = result.tasks_output[<span class="number">0</span>].json_dict
+<span class="comment"># {"severity": "high", "issues": [...]}</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">📝 最終 Markdown 報告</div>
+            <pre><code><span class="comment"># 智農生技：無人機巡檢與環境日報</span>
+
+**巡檢日期：** 2026-05-20
+**目標場域：** 台中 3 號育成圈
+**報告生成狀態：** AI 專家 Agent 自動簽核完成
+
+---
+
+## 一、 核心數據異常警訊
+1. **豬隻數量異常：** 16:00 數量驟降至 42 隻（−16%）。
+2. **環境指標超標：** 氨氣 25 ppm，超過國家標準 20 ppm。
+
+## 二、 專家臨床診斷
+* **高度可能（70%）** 群聚疊臥造成 YOLO 遮擋漏算
+* **中度可能（20%）** 欄位破損逃脫
+* **低度可能（10%）** 急性集體中暑
+
+## 三、 今日改善行動建議
+- [ ] 立即啟動水簾與風扇
+- [ ] 無人機降低飛行高度二次複查</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐍 Markdown → PDF</div>
+            <pre><code><span class="keyword">import</span> markdown
+<span class="keyword">from</span> weasyprint <span class="keyword">import</span> HTML
+
+<span class="comment"># Markdown → HTML（套用 CSS 樣板）</span>
+html_body = markdown.markdown(markdown_report)
+html_full = f<span class="string">"""
+&lt;html&gt;
+  &lt;head&gt;&lt;link rel="stylesheet" href="report.css"&gt;&lt;/head&gt;
+  &lt;body&gt;{html_body}&lt;/body&gt;
+&lt;/html&gt;
+"""</span>
+
+<span class="comment"># HTML → PDF</span>
+HTML(string=html_full).write_pdf(
+    <span class="string">"pig_farm_report_2026-05-20.pdf"</span>
+)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">🐍 警報門檻判斷</div>
+            <pre><code><span class="keyword">def</span> classify_severity(alerts):
+    high_risk_keywords = [
+        <span class="string">"逃脫"</span>, <span class="string">"中暑"</span>, <span class="string">"急性"</span>, <span class="string">"死亡"</span>
+    ]
+
+    <span class="keyword">if</span> alerts[<span class="string">"ammonia_ppm"</span>] &gt; <span class="number">30</span>:
+        <span class="keyword">return</span> <span class="string">"critical"</span>
+    <span class="keyword">if</span> alerts[<span class="string">"count_drop_pct"</span>] &gt; <span class="number">20</span>:
+        <span class="keyword">return</span> <span class="string">"high"</span>
+    <span class="keyword">if</span> any(k <span class="keyword">in</span> alerts[<span class="string">"summary"</span>]
+           <span class="keyword">for</span> k <span class="keyword">in</span> high_risk_keywords):
+        <span class="keyword">return</span> <span class="string">"high"</span>
+    <span class="keyword">return</span> <span class="string">"normal"</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">🐍 Line Bot 推送</div>
+            <pre><code><span class="keyword">from</span> linebot <span class="keyword">import</span> LineBotApi
+<span class="keyword">from</span> linebot.models <span class="keyword">import</span> TextSendMessage, FlexSendMessage
+
+line_bot = LineBotApi(<span class="string">"YOUR_CHANNEL_TOKEN"</span>)
+
+<span class="keyword">if</span> severity <span class="keyword">in</span> [<span class="string">"high"</span>, <span class="string">"critical"</span>]:
+    msg = f<span class="string">"🚨 3 號圈異常警示\n"</span> \
+          f<span class="string">"豬隻數量 16:00 驟降 16%\n"</span> \
+          f<span class="string">"氨氣 25 ppm（超標）\n"</span> \
+          f<span class="string">"完整報告：{pdf_url}"</span>
+
+    line_bot.push_message(
+        FARM_OWNER_USER_ID,
+        TextSendMessage(text=msg)
+    )</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ 報告送達</div>
+            <div class="visual-block">
+              <div class="visual-icon">📱</div>
+              <div class="visual-title">農場主人收到通知</div>
+              <div class="visual-sub">
+                整個 pipeline 從邊緣端拍攝、後端分析、Agent 推理到最後送達 Line，全程自動化。農場主人只需打開手機，就能看到完整 PDF 報告與行動建議。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">PDF 已產生</span>
+                <span class="visual-chip">Line 已推送</span>
+                <span class="visual-chip">郵件副本</span>
+                <span class="visual-chip">儀表板更新</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>取得 Agent 結論</h4>
+          <p>Crew 完成後可取得多種形式的輸出：</p>
+          <ul>
+            <li><strong>result.raw：</strong>最後一個 Task 的純文字輸出（通常是 Markdown）。</li>
+            <li><strong>tasks_output：</strong>每個 Task 的詳細結果，可分別取用。</li>
+            <li><strong>json_dict：</strong>若 Task 設定 output_json，可直接取得結構化資料。</li>
+            <li><strong>tokens / 成本：</strong>Crew 也會回傳本次執行的 token 用量，便於成本追蹤。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>產生 Markdown 報告</h4>
+          <p>為什麼選用 Markdown 作為中介格式？</p>
+          <ul>
+            <li><strong>LLM 友善：</strong>大模型對 Markdown 結構掌握度最高，輸出穩定。</li>
+            <li><strong>易於轉換：</strong>可一鍵轉為 HTML、PDF、DOCX，覆蓋所有交付場景。</li>
+            <li><strong>人類可讀：</strong>純文字即可閱讀，方便人工審核 AI 結論。</li>
+            <li><strong>版本控管：</strong>可入 Git 比對歷史報告變化，建立稽核軌跡。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>轉換為 PDF</h4>
+          <p>兩條主流路線：</p>
+          <ul>
+            <li><strong>WeasyPrint（Markdown → HTML → PDF）：</strong>用 CSS 控制版面，最容易做漂亮設計。</li>
+            <li><strong>ReportLab（直接組裝）：</strong>程式化精細控制，適合需要動態圖表的報告。</li>
+            <li><strong>樣板套用：</strong>準備好公司 logo、頁首頁尾的 HTML/CSS 樣板，每次報告自動套用。</li>
+            <li><strong>圖表嵌入：</strong>用 matplotlib / plotly 產生圖表 PNG，插入 Markdown 一併渲染。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>異常嚴重度判斷</h4>
+          <p>決定推播強度與通知對象的關鍵邏輯：</p>
+          <ul>
+            <li><strong>normal：</strong>僅產生日報存檔，不主動推播。</li>
+            <li><strong>high：</strong>推 Line 訊息 + 附 PDF 連結。</li>
+            <li><strong>critical：</strong>Line + 電話 + 短訊三重通知，立刻找到負責人。</li>
+            <li><strong>關鍵字 + 數值門檻：</strong>同時用結構化欄位（氨氣 ppm）與 LLM 摘要關鍵字判斷，兩道防線。</li>
+            <li><strong>避免狼來了：</strong>對同一異常設定冷卻期，避免短時間重複轟炸。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>推送 Line 通知</h4>
+          <p>Line Bot 推送實務：</p>
+          <ul>
+            <li><strong>Push API：</strong>主動向使用者發訊息，需事先取得 user_id。</li>
+            <li><strong>Flex Message：</strong>可發送卡片式訊息，內嵌按鈕跳轉 PDF 詳情。</li>
+            <li><strong>群組推播：</strong>農場主人 + 獸醫 + 員工建立群組，重要事件全員可見。</li>
+            <li><strong>多通道：</strong>除了 Line，也可同時發 Email、Slack、Telegram 增加觸達。</li>
+            <li><strong>送達回報：</strong>使用 webhook 確認訊息是否被讀取，未讀則升級通知。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>報告送達農場主人</h4>
+          <p>整套系統的最終交付：</p>
+          <ul>
+            <li><strong>PDF 報告：</strong>已上傳雲端儲存，可長期保留作為稽核紀錄。</li>
+            <li><strong>Line 通知：</strong>農場主人手機即時收到摘要與行動建議。</li>
+            <li><strong>儀表板更新：</strong>後端同步更新 Web 儀表板，可隨時瀏覽歷史。</li>
+            <li><strong>形成資料閉環：</strong>農場主人處理結果可回饋給系統，作為下一輪 Agent 學習素材。</li>
+            <li><strong>系統運作完成 🎉：</strong>判別式 + 生成式 AI 整套智慧畜牧 pipeline 上線運行。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage3.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❸ AI Agent 推理</span>
+        </a>
+        <a href="generative.html" class="next">
+          <span class="nav-label">完成 ✓</span>
+          <span class="nav-title">返回流程圖</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>

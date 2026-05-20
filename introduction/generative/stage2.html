@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>階段 2：RAG 知識檢索 — 生成式 AI 後端</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <a href="generative.html" class="back-link">← 返回流程圖</a>
+
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>❷ RAG 知識檢索（Retrieval Augmented Generation）
+          <button type="button" class="tool-badge-btn" onclick="document.getElementById('tools-dialog').showModal()">
+            推薦工具：LangChain / ChromaDB
+          </button>
+        </h2>
+      </div>
+
+      <dialog id="tools-dialog" class="tools-dialog">
+        <div class="dialog-header">
+          <h3>🔧 階段 2：RAG 相關工具</h3>
+          <button type="button" class="dialog-close" onclick="this.closest('dialog').close()" aria-label="關閉">×</button>
+        </div>
+        <div class="dialog-body">
+          <p>本階段使用的 RAG 框架、向量資料庫與嵌入模型。</p>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>工具</th>
+                <th>用途與特色</th>
+                <th>連結</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tool-name">LangChain</td>
+                <td class="tool-desc">最廣泛使用的 LLM 應用框架，提供 loader、splitter、retriever 全套元件。</td>
+                <td class="tool-link"><a href="https://www.langchain.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">LlamaIndex</td>
+                <td class="tool-desc">專注於資料索引與檢索的 LLM 框架，提供更彈性的索引結構。</td>
+                <td class="tool-link"><a href="https://www.llamaindex.ai/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">ChromaDB</td>
+                <td class="tool-desc">輕量開源向量資料庫，可內嵌於 Python 應用，零配置即可上手。</td>
+                <td class="tool-link"><a href="https://www.trychroma.com/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">pgvector</td>
+                <td class="tool-desc">PostgreSQL 的向量擴充，可在原有資料庫直接做向量相似度查詢。</td>
+                <td class="tool-link"><a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Pinecone</td>
+                <td class="tool-desc">託管式向量資料庫，免運維、橫向擴展能力強，適合生產環境。</td>
+                <td class="tool-link"><a href="https://www.pinecone.io/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">Weaviate</td>
+                <td class="tool-desc">開源向量資料庫，原生支援混合檢索（語意 + 關鍵字）。</td>
+                <td class="tool-link"><a href="https://weaviate.io/" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+              <tr>
+                <td class="tool-name">OpenAI Embeddings</td>
+                <td class="tool-desc">高品質的商用嵌入模型 (text-embedding-3)，API 簡單呼叫即可。</td>
+                <td class="tool-link"><a href="https://platform.openai.com/docs/guides/embeddings" target="_blank" rel="noopener">前往 →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </dialog>
+
+      <p>把養豬規範、疾病百科、農場 SOP 等文件切碎、向量化後存入資料庫，當 Agent 推理時可<strong>精準調閱對應段落</strong>。RAG 讓 LLM 不再「猜」答案，而是基於確實知識回答，扮演系統的「教科書」。點擊左側步驟查看實作細節。</p>
+
+      <div class="section-title">🗺️ 階段工作流程（點擊步驟查看細節）</div>
+
+      <div class="interactive-flow">
+        <div class="step-buttons">
+          <button class="step-btn active" data-step="1">
+            <span class="step-num">1</span><span class="step-text">蒐集知識文件</span>
+          </button>
+          <button class="step-btn" data-step="2">
+            <span class="step-num">2</span><span class="step-text">文件切割 Chunking</span>
+          </button>
+          <button class="step-btn" data-step="3">
+            <span class="step-num">3</span><span class="step-text">Embedding 向量化</span>
+          </button>
+          <button class="step-btn" data-step="4">
+            <span class="step-num">4</span><span class="step-text">寫入向量資料庫</span>
+          </button>
+          <button class="step-btn" data-step="5">
+            <span class="step-num">5</span><span class="step-text">相似度檢索</span>
+          </button>
+          <button class="step-btn final" data-step="6">
+            <span class="step-num">✓</span><span class="step-text">注入 Prompt Context</span>
+          </button>
+        </div>
+
+        <div class="step-preview">
+          <div class="preview-content active" data-step="1">
+            <div class="preview-label">📚 知識文件來源</div>
+            <div class="visual-block">
+              <div class="visual-icon">📚</div>
+              <div class="visual-title">建立農場「教科書」</div>
+              <div class="visual-sub">
+                蒐集政府養豬規範、豬隻疾病百科、農場自有 SOP，作為 RAG 知識庫的原始素材。
+              </div>
+              <div class="visual-chips">
+                <span class="visual-chip">政府規範 PDF</span>
+                <span class="visual-chip">疾病百科</span>
+                <span class="visual-chip">SOP 手冊</span>
+                <span class="visual-chip">獸醫筆記</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-content" data-step="2">
+            <div class="preview-label">🐍 LangChain 文件切割</div>
+            <pre><code><span class="keyword">from</span> langchain.document_loaders <span class="keyword">import</span> PyPDFLoader
+<span class="keyword">from</span> langchain.text_splitter <span class="keyword">import</span> RecursiveCharacterTextSplitter
+
+loader = PyPDFLoader(<span class="string">"pig_disease_handbook.pdf"</span>)
+docs = loader.load()
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="number">500</span>,
+    chunk_overlap=<span class="number">50</span>
+)
+chunks = splitter.split_documents(docs)</code></pre>
+          </div>
+
+          <div class="preview-content" data-step="3">
+            <div class="preview-label">🐍 文字 → 向量</div>
+            <pre><code><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings(
+    model=<span class="string">"text-embedding-3-small"</span>
+)
+
+<span class="comment"># 每個 chunk 被轉成 1536 維向量</span>
+vector = embeddings.embed_query(
+    <span class="string">"豬隻氨氣濃度超標的警示症狀"</span>
+)
+<span class="comment"># → [0.0123, -0.0456, 0.0789, ...]</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="4">
+            <div class="preview-label">🐍 寫入 ChromaDB</div>
+            <pre><code><span class="keyword">from</span> langchain_community.vectorstores <span class="keyword">import</span> Chroma
+
+vectorstore = Chroma.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory=<span class="string">"./farm_kb"</span>
+)
+
+vectorstore.persist()
+<span class="comment"># 知識庫已建立，可長期重複使用</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="5">
+            <div class="preview-label">🐍 相似度查詢</div>
+            <pre><code>query = <span class="string">"3 號圈氨氣 25ppm 且豬隻數量異常下降可能原因"</span>
+
+results = vectorstore.similarity_search(
+    query,
+    k=<span class="number">3</span>  <span class="comment"># 取前 3 個最相關段落</span>
+)
+
+<span class="keyword">for</span> doc <span class="keyword">in</span> results:
+    print(doc.page_content)
+    <span class="comment"># → 「氨氣 &gt; 20ppm 將刺激呼吸道...」</span>
+    <span class="comment"># → 「夏季高溫常見群聚疊臥...」</span></code></pre>
+          </div>
+
+          <div class="preview-content" data-step="6">
+            <div class="preview-label">✅ 增強後的 Prompt</div>
+            <pre><code><span class="comment"># 拼接知識 + 資料給 LLM</span>
+prompt = f<span class="string">"""你是資深畜牧專家。
+
+【背景知識】
+{retrieved_chunks}
+
+【今日農場數據】
+{farm_data_json}
+
+請根據以上資訊撰寫巡檢報告。
+"""</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-details">
+        <div class="details-label">📋 詳細資訊</div>
+
+        <div class="detail-content active" data-step="1">
+          <h4>蒐集知識文件</h4>
+          <p>知識庫品質決定 RAG 的回答品質，建議來源：</p>
+          <ul>
+            <li><strong>政府規範：</strong>農業部畜牧處的飼養標準、氨氣濃度上限等法規文件。</li>
+            <li><strong>學術文獻：</strong>豬隻疾病學教科書、最新的獸醫期刊論文。</li>
+            <li><strong>農場 SOP：</strong>自家累積的處置手冊、案例紀錄、巡檢清單。</li>
+            <li><strong>專家筆記：</strong>資深獸醫的口述經驗，整理為結構化文字。</li>
+            <li><strong>格式相容：</strong>支援 PDF、Word、Markdown、HTML，使用 LangChain 對應 Loader。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="2">
+          <h4>文件切割 Chunking</h4>
+          <p>LLM 一次只能處理有限 token，文件切得越好，檢索越準：</p>
+          <ul>
+            <li><strong>chunk_size：</strong>每塊 300~800 字最常用；段落式知識可大一點。</li>
+            <li><strong>chunk_overlap：</strong>相鄰塊重疊 10~15%，避免關鍵句被切斷。</li>
+            <li><strong>RecursiveCharacterTextSplitter：</strong>依段落→句→字逐層分割，保留語意。</li>
+            <li><strong>Markdown / HTML splitter：</strong>對結構化文件有專屬切割器，更聰明。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="3">
+          <h4>Embedding 向量化</h4>
+          <p>把文字轉為高維向量，讓「語意相近」可被距離計算捕捉：</p>
+          <ul>
+            <li><strong>text-embedding-3-small：</strong>OpenAI 主力模型，1536 維，CP 值最高。</li>
+            <li><strong>BGE / GTE：</strong>開源優質模型，可在本地運行降低成本。</li>
+            <li><strong>多語言：</strong>需處理中文時選用支援中文的模型（如 BGE-M3）。</li>
+            <li><strong>批次處理：</strong>多筆一起送 API 比逐筆呼叫便宜且快。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="4">
+          <h4>寫入向量資料庫</h4>
+          <p>選型依規模而定：</p>
+          <ul>
+            <li><strong>ChromaDB：</strong>百萬筆以下、單機部署，最低門檻。</li>
+            <li><strong>pgvector：</strong>已有 PostgreSQL 就直接擴充，省一套基礎設施。</li>
+            <li><strong>Pinecone / Weaviate：</strong>千萬筆以上或需高可用，選託管雲服務。</li>
+            <li><strong>metadata 過濾：</strong>同時存入分類標籤（疾病、規範、SOP），查詢時可加條件。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="5">
+          <h4>相似度檢索</h4>
+          <p>查詢階段的關鍵技巧：</p>
+          <ul>
+            <li><strong>top-k：</strong>通常取 3~5 塊，太多會稀釋訊號、增加 token 消耗。</li>
+            <li><strong>MMR (Max Marginal Relevance)：</strong>避免取到過度相似的重複內容。</li>
+            <li><strong>Hybrid search：</strong>結合 BM25 關鍵字 + 向量檢索，補強純語意的盲點。</li>
+            <li><strong>Re-ranking：</strong>用更小的 cross-encoder 模型對 top-20 重新排序，提升精度。</li>
+          </ul>
+        </div>
+
+        <div class="detail-content" data-step="6">
+          <h4>注入 Prompt Context</h4>
+          <p>最終把檢索結果拼進 Agent prompt：</p>
+          <ul>
+            <li><strong>清晰分隔：</strong>用 <code>【背景知識】</code>、<code>【今日數據】</code>等標籤區隔。</li>
+            <li><strong>引用來源：</strong>每塊加上 metadata（如「來源：豬隻疾病百科 p.45」），便於人工查核。</li>
+            <li><strong>避免幻覺：</strong>明確指示 LLM「僅根據以上知識回答，不確定請說明」。</li>
+            <li><strong>進入下一階段：</strong>已準備好高品質 context，交給 Agent 進行推理。</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="detail-nav">
+        <a href="stage1.html" class="prev">
+          <span class="nav-label">← 上一步</span>
+          <span class="nav-title">❶ 結構化數據整合</span>
+        </a>
+        <a href="stage3.html" class="next">
+          <span class="nav-label">下一步 →</span>
+          <span class="nav-title">❸ AI Agent 推理</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = btn.dataset.step;
+        document.querySelectorAll('.step-btn').forEach(b => b.classList.toggle('active', b.dataset.step === step));
+        document.querySelectorAll('.preview-content').forEach(p => p.classList.toggle('active', p.dataset.step === step));
+        document.querySelectorAll('.detail-content').forEach(d => d.classList.toggle('active', d.dataset.step === step));
+      });
+    });
+
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+
+</html>
