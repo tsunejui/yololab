@@ -99,7 +99,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">📄 dataset.yaml</div>
+            <div class="preview-label"><span>📄 dataset.yaml</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code>path: ./pig_dataset
 train: train/images
 val: val/images
@@ -110,7 +110,7 @@ names:
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">🐍 載入預訓練權重</div>
+            <div class="preview-label"><span>🐍 載入預訓練權重</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
 
 <span class="comment"># 載入官方 Nano 預訓練模型 (~5MB)</span>
@@ -118,7 +118,7 @@ model = YOLO(<span class="string">'yolo11n.pt'</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐍 train.py — 啟動訓練</div>
+            <div class="preview-label"><span>🐍 train.py — 啟動訓練</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
 
 <span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
@@ -133,7 +133,7 @@ model = YOLO(<span class="string">'yolo11n.pt'</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">📊 驗證指標示意</div>
+            <div class="preview-label"><span>📊 驗證指標示意</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">📈</div>
               <div class="visual-title">每 epoch 自動評估</div>
@@ -150,7 +150,7 @@ model = YOLO(<span class="string">'yolo11n.pt'</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">📂 訓練輸出資料夾</div>
+            <div class="preview-label"><span>📂 訓練輸出資料夾</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code>runs/detect/train/
 ├── weights/
 │   ├── best.pt        <span class="comment"># 驗證最佳權重 ⭐</span>
@@ -162,7 +162,7 @@ model = YOLO(<span class="string">'yolo11n.pt'</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">✅ 訓練完成</div>
+            <div class="preview-label"><span>✅ 訓練完成</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">🧠</div>
               <div class="visual-title">自訂豬隻偵測模型就緒</div>

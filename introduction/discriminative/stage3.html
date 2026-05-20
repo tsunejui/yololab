@@ -102,7 +102,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">🐍 開啟影像串流</div>
+            <div class="preview-label"><span>🐍 開啟影像串流</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">import</span> cv2
 
 <span class="comment"># 本地影片或 RTSP 串流皆可</span>
@@ -115,7 +115,7 @@ cap = cv2.VideoCapture(<span class="string">'drone_stream.mp4'</span>)
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">🐍 載入模型 + 推論</div>
+            <div class="preview-label"><span>🐍 載入模型 + 推論</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
 
 model = YOLO(<span class="string">'runs/detect/train/weights/best.pt'</span>)
@@ -125,7 +125,7 @@ results = model(frame)</code></pre>
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐍 啟用 ByteTrack</div>
+            <div class="preview-label"><span>🐍 啟用 ByteTrack</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="comment"># persist=True 讓 tracker 在連續幀間保留狀態</span>
 results = model.track(
     frame,
@@ -135,7 +135,7 @@ results = model.track(
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">🐍 取得追蹤 ID</div>
+            <div class="preview-label"><span>🐍 取得追蹤 ID</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">if</span> results[<span class="number">0</span>].boxes.id <span class="keyword">is not None</span>:
     track_ids = (
         results[<span class="number">0</span>].boxes.id
@@ -145,7 +145,7 @@ results = model.track(
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">🐍 統計畫面豬隻數</div>
+            <div class="preview-label"><span>🐍 統計畫面豬隻數</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code>current_pig_count = len(track_ids)
 
 <span class="comment"># 唯一 ID 數 = 畫面中豬隻數</span>
@@ -154,7 +154,7 @@ print(f<span class="string">"目前畫面共 {current_pig_count} 頭"</span>)</c
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">🐍 結果視覺化</div>
+            <div class="preview-label"><span>🐍 結果視覺化</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="comment"># 將數量寫到畫面左上角</span>
 cv2.putText(
     frame,
@@ -170,7 +170,7 @@ cv2.imshow(<span class="string">"Drone Census"</span>, annotated)</code></pre>
           </div>
 
           <div class="preview-content" data-step="7">
-            <div class="preview-label">✅ 完整程式</div>
+            <div class="preview-label"><span>✅ 完整程式</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code><span class="keyword">import</span> cv2
 <span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
 

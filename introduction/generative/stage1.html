@@ -97,7 +97,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">🚁 邊緣端資料上傳</div>
+            <div class="preview-label"><span>🚁 邊緣端資料上傳</span><span class="preview-job">👤 後端工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">🚁</div>
               <div class="visual-title">無人機 → 雲端資料庫</div>
@@ -114,7 +114,7 @@
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">⏰ 排程觸發（每小時 / 每日）</div>
+            <div class="preview-label"><span>⏰ 排程觸發（每小時 / 每日）</span><span class="preview-job">👤 資料工程師</span></div>
             <pre><code><span class="keyword">from</span> apscheduler.schedulers.blocking <span class="keyword">import</span> BlockingScheduler
 
 scheduler = BlockingScheduler()
@@ -129,7 +129,7 @@ scheduler.start()</code></pre>
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐘 SQL 查詢</div>
+            <div class="preview-label"><span>🐘 SQL 查詢</span><span class="preview-job">👤 資料工程師</span></div>
             <pre><code><span class="keyword">SELECT</span>
   zone_id,
   TO_CHAR(ts, <span class="string">'HH24:MI'</span>) <span class="keyword">AS</span> time,
@@ -144,7 +144,7 @@ scheduler.start()</code></pre>
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">📦 餵給 Agent 的 JSON</div>
+            <div class="preview-label"><span>📦 餵給 Agent 的 JSON</span><span class="preview-job">👤 資料工程師</span></div>
             <pre><code>{
   <span class="string">"report_date"</span>: <span class="string">"2026-05-20"</span>,
   <span class="string">"farm_id"</span>: <span class="string">"TAICHUNG_PIG_03"</span>,
@@ -166,7 +166,7 @@ scheduler.start()</code></pre>
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">✅ 數據就緒</div>
+            <div class="preview-label"><span>✅ 數據就緒</span><span class="preview-job">👤 資料工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">💾</div>
               <div class="visual-title">結構化數據 → 下游 Agent</div>

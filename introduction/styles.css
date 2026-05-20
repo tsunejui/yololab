@@ -1086,6 +1086,27 @@ header p {
   letter-spacing: 0.08em;
   margin-bottom: 0.6rem;
   font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.preview-job {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.72rem;
+  color: var(--accent);
+  background-color: rgba(52, 211, 153, 0.12);
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 /* Visual / image placeholder */

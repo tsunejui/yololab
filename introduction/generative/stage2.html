@@ -105,7 +105,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">📚 知識文件來源</div>
+            <div class="preview-label"><span>📚 知識文件來源</span><span class="preview-job">👤 領域專家顧問</span></div>
             <div class="visual-block">
               <div class="visual-icon">📚</div>
               <div class="visual-title">建立農場「教科書」</div>
@@ -122,7 +122,7 @@
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">🐍 LangChain 文件切割</div>
+            <div class="preview-label"><span>🐍 LangChain 文件切割</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="keyword">from</span> langchain.document_loaders <span class="keyword">import</span> PyPDFLoader
 <span class="keyword">from</span> langchain.text_splitter <span class="keyword">import</span> RecursiveCharacterTextSplitter
 
@@ -137,7 +137,7 @@ chunks = splitter.split_documents(docs)</code></pre>
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐍 文字 → 向量</div>
+            <div class="preview-label"><span>🐍 文字 → 向量</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> OpenAIEmbeddings
 
 embeddings = OpenAIEmbeddings(
@@ -152,7 +152,7 @@ vector = embeddings.embed_query(
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">🐍 寫入 ChromaDB</div>
+            <div class="preview-label"><span>🐍 寫入 ChromaDB</span><span class="preview-job">👤 資料工程師</span></div>
             <pre><code><span class="keyword">from</span> langchain_community.vectorstores <span class="keyword">import</span> Chroma
 
 vectorstore = Chroma.from_documents(
@@ -166,7 +166,7 @@ vectorstore.persist()
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">🐍 相似度查詢</div>
+            <div class="preview-label"><span>🐍 相似度查詢</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code>query = <span class="string">"3 號圈氨氣 25ppm 且豬隻數量異常下降可能原因"</span>
 
 results = vectorstore.similarity_search(
@@ -181,7 +181,7 @@ results = vectorstore.similarity_search(
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">✅ 增強後的 Prompt</div>
+            <div class="preview-label"><span>✅ 增強後的 Prompt</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="comment"># 拼接知識 + 資料給 LLM</span>
 prompt = f<span class="string">"""你是資深畜牧專家。
 

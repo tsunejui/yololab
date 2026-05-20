@@ -105,7 +105,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">🐍 載入 LLM</div>
+            <div class="preview-label"><span>🐍 載入 LLM</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="keyword">import</span> os
 <span class="keyword">from</span> crewai <span class="keyword">import</span> Agent, Task, Crew, Process
 <span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI
@@ -120,7 +120,7 @@ llm = ChatOpenAI(
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">🐍 兩位 AI Agent</div>
+            <div class="preview-label"><span>🐍 兩位 AI Agent</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code>data_analyst = Agent(
     role=<span class="string">'數據分析特工'</span>,
     goal=<span class="string">'分析豬圈歷史數量與環境感測器數據，找出異常趨勢'</span>,
@@ -141,7 +141,7 @@ livestock_expert = Agent(
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐍 任務鏈設計</div>
+            <div class="preview-label"><span>🐍 任務鏈設計</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code>task1 = Task(
     description=f<span class="string">'分析以下農場數據：{farm_data_json}。'</span>
                 <span class="string">'特別注意 16:00 數量從 50 隻降到 42 隻，'</span>
@@ -162,7 +162,7 @@ task2 = Task(
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">🐍 組裝 Crew</div>
+            <div class="preview-label"><span>🐍 組裝 Crew</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code>pig_farm_crew = Crew(
     agents=[data_analyst, livestock_expert],
     tasks=[task1, task2],
@@ -175,7 +175,7 @@ print(<span class="string">"## 報告生成完畢！"</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">🤔 Agent 內部推理迴圈</div>
+            <div class="preview-label"><span>🤔 Agent 內部推理迴圈</span><span class="preview-job">👤 LLM 工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">🤔</div>
               <div class="visual-title">Reasoning → Critic → Refine</div>
@@ -192,7 +192,7 @@ print(<span class="string">"## 報告生成完畢！"</span>)</code></pre>
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">✅ Agent 產出</div>
+            <div class="preview-label"><span>✅ Agent 產出</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="comment"># 數據分析師輸出（task1.output）</span>
 <span class="string">"""
 - 16:00 豬隻數量驟降 16%（50 → 42）

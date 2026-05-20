@@ -104,7 +104,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">📂 階段 2 訓練輸出</div>
+            <div class="preview-label"><span>📂 階段 2 訓練輸出</span><span class="preview-job">👤 電腦視覺工程師</span></div>
             <pre><code>runs/detect/train/weights/
 └── best.pt          <span class="comment"># PyTorch 權重 (~5MB)</span>
                      <span class="comment"># 桌機推論：~40ms / frame</span>
@@ -112,7 +112,7 @@
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">💻 終端機指令</div>
+            <div class="preview-label"><span>💻 終端機指令</span><span class="preview-job">👤 邊緣 AI 工程師</span></div>
             <pre><code style="color: #50fa7b;">yolo export \
   model=best.pt \
   format=engine \
@@ -122,7 +122,7 @@
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">⚡ FP16 量化比較</div>
+            <div class="preview-label"><span>⚡ FP16 量化比較</span><span class="preview-job">👤 邊緣 AI 工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">⚡</div>
               <div class="visual-title">推論時間砍半，精度幾乎不變</div>
@@ -138,7 +138,7 @@
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">📂 編譯產出</div>
+            <div class="preview-label"><span>📂 編譯產出</span><span class="preview-job">👤 邊緣 AI 工程師</span></div>
             <pre><code>runs/detect/train/weights/
 ├── best.pt          <span class="comment"># 原生 PyTorch 權重</span>
 │                    <span class="comment"># 桌機 ~40ms / frame</span>
@@ -147,7 +147,7 @@
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">🚁 邊緣部署</div>
+            <div class="preview-label"><span>🚁 邊緣部署</span><span class="preview-job">👤 MLOps 工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">🛰️</div>
               <div class="visual-title">複製 engine 至無人機晶片</div>
@@ -163,7 +163,7 @@
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">✅ 上線運行</div>
+            <div class="preview-label"><span>✅ 上線運行</span><span class="preview-job">👤 邊緣 AI 工程師</span></div>
             <div class="visual-block">
               <div class="visual-icon">🎯</div>
               <div class="visual-title">完全離線即時推論</div>

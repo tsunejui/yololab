@@ -105,7 +105,7 @@
 
         <div class="step-preview">
           <div class="preview-content active" data-step="1">
-            <div class="preview-label">🐍 接收 Crew 結果</div>
+            <div class="preview-label"><span>🐍 接收 Crew 結果</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code>result = pig_farm_crew.kickoff()
 
 <span class="comment"># Agent 輸出的 Markdown 內容</span>
@@ -117,7 +117,7 @@ alerts = result.tasks_output[<span class="number">0</span>].json_dict
           </div>
 
           <div class="preview-content" data-step="2">
-            <div class="preview-label">📝 最終 Markdown 報告</div>
+            <div class="preview-label"><span>📝 最終 Markdown 報告</span><span class="preview-job">👤 LLM 工程師</span></div>
             <pre><code><span class="comment"># 智農生技：無人機巡檢與環境日報</span>
 
 **巡檢日期：** 2026-05-20
@@ -141,7 +141,7 @@ alerts = result.tasks_output[<span class="number">0</span>].json_dict
           </div>
 
           <div class="preview-content" data-step="3">
-            <div class="preview-label">🐍 Markdown → PDF</div>
+            <div class="preview-label"><span>🐍 Markdown → PDF</span><span class="preview-job">👤 後端工程師</span></div>
             <pre><code><span class="keyword">import</span> markdown
 <span class="keyword">from</span> weasyprint <span class="keyword">import</span> HTML
 
@@ -161,7 +161,7 @@ HTML(string=html_full).write_pdf(
           </div>
 
           <div class="preview-content" data-step="4">
-            <div class="preview-label">🐍 警報門檻判斷</div>
+            <div class="preview-label"><span>🐍 警報門檻判斷</span><span class="preview-job">👤 後端工程師</span></div>
             <pre><code><span class="keyword">def</span> classify_severity(alerts):
     high_risk_keywords = [
         <span class="string">"逃脫"</span>, <span class="string">"中暑"</span>, <span class="string">"急性"</span>, <span class="string">"死亡"</span>
@@ -178,7 +178,7 @@ HTML(string=html_full).write_pdf(
           </div>
 
           <div class="preview-content" data-step="5">
-            <div class="preview-label">🐍 Line Bot 推送</div>
+            <div class="preview-label"><span>🐍 Line Bot 推送</span><span class="preview-job">👤 後端工程師</span></div>
             <pre><code><span class="keyword">from</span> linebot <span class="keyword">import</span> LineBotApi
 <span class="keyword">from</span> linebot.models <span class="keyword">import</span> TextSendMessage, FlexSendMessage
 
@@ -197,7 +197,7 @@ line_bot = LineBotApi(<span class="string">"YOUR_CHANNEL_TOKEN"</span>)
           </div>
 
           <div class="preview-content" data-step="6">
-            <div class="preview-label">✅ 報告送達</div>
+            <div class="preview-label"><span>✅ 報告送達</span><span class="preview-job">👤 產品經理</span></div>
             <div class="visual-block">
               <div class="visual-icon">📱</div>
               <div class="visual-title">農場主人收到通知</div>
